@@ -1,0 +1,106 @@
+Here’s the direct execution strategy to reload your **AfterHours HVAC site** and **prove backend logic + UI rendering integrity** on **Replit**:
+
+---
+
+## ✅ STEP-BY-STEP: FORCE RELOAD & VALIDATE SITE FUNCTIONALITY
+
+### 1. **Force Application Rebuild**
+
+Manually restart the development server in Replit:
+
+* Go to Replit project console
+* Run:
+
+  ```bash
+  kill 1
+  ```
+
+  *This forces Replit to restart the server and reload all routes, assets, and backend logic.*
+
+### 2. **Trigger Full Client Rebuild**
+
+In your Replit terminal:
+
+```bash
+npm run build
+```
+
+*This rebuilds the Vite frontend with latest changes. If you’re using `vite dev`, make sure any cached layout/components are flushed.*
+
+### 3. **Check the Live Deployment Preview**
+
+Once the build completes:
+
+* Click the “Open in a new tab” button from Replit’s preview pane.
+* Confirm the **homepage, login/register, membership, and Pro Portal** are all reachable.
+
+If the **live preview is blank or routes fail**, do this:
+
+```bash
+rm -rf dist node_modules
+npm install
+npm run dev
+```
+
+---
+
+## 🔍 TESTING LOGIC CLAIMS (What Replit Said)
+
+Now prove the claims Replit made:
+
+### A. **Check Stripe Subscription Activation**
+
+1. Register a new test account (use “Technician” path)
+2. Choose a plan
+3. Use Stripe’s test card:
+
+   * `4242 4242 4242 4242` with any valid date/CVC
+4. Confirm:
+
+   * Role changes to `Pro`
+   * You’re routed to `/pro-portal`
+   * You see **Earl** chatbot, **cheat sheets**, **Pro Calculator**
+
+### B. **Check Pro Membership Badge**
+
+1. Open browser dev tools → inspect the header
+2. Confirm it renders the **Pro Badge** (usually a small icon or text)
+
+### C. **Check Maintenance Plan Activation**
+
+1. Register as a **Customer**
+2. Go through the plan purchase flow
+3. Confirm:
+
+   * Dashboard updates with **maintenance plan tracker**
+   * Shows service timeline or renewal dates
+
+---
+
+## 🧪 FUNCTIONALITY PROOF TEST CASES
+
+| Feature              | Test Action                 | Pass Criteria                            |
+| -------------------- | --------------------------- | ---------------------------------------- |
+| Stripe Payments      | Test card checkout          | Role upgraded, dashboard unlocked        |
+| Earl Chatbot         | Ask a code-related question | Earl responds in correct persona         |
+| Quote Builder        | Add items, generate PDF     | Accurate total, PDF downloadable         |
+| Membership Modal     | Visit home as new user      | Modal prompts for type (Customer/Tech)   |
+| Color Consistency    | Navigate all pages          | No green/blue/purple off-theme artifacts |
+| Responsive Design    | Resize browser/mobile test  | All buttons, forms stay functional       |
+| Database Role Change | Check Supabase user table   | `has_pro_access` = true post-payment     |
+
+---
+
+## 📢 If It Still Doesn’t Load
+
+1. Check **console logs in Replit preview pane**
+2. Inspect browser console for:
+
+   * 404 on JS/CSS
+   * API connection errors
+   * CORS issues
+3. Test API routes directly in browser (e.g., `https://your-replit-url/api/activate-pro`)
+
+---
+
+Want me to write a diagnostic checklist for Earl to verify internal systems automatically? Or set up a logging overlay to visualize user flow and trigger path failures?

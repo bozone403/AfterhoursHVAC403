@@ -1,0 +1,55 @@
+export const theme = {
+  colors: {
+    primary: {
+      50: 'rgb(240 249 255)',
+      100: 'rgb(219 234 254)',
+      200: 'rgb(191 219 254)',
+      300: 'rgb(147 197 253)',
+      400: 'rgb(96 165 250)',
+      500: 'rgb(59 130 246)',
+      600: 'rgb(37 99 235)',
+      700: 'rgb(29 78 216)',
+      800: 'rgb(30 64 175)',
+      900: 'rgb(30 58 138)',
+    },
+    accent: {
+      50: 'rgb(255 247 237)',
+      100: 'rgb(255 237 213)',
+      200: 'rgb(254 215 170)',
+      300: 'rgb(253 186 116)',
+      400: 'rgb(251 146 60)',
+      500: 'rgb(249 115 22)',
+      600: 'rgb(234 88 12)',
+      700: 'rgb(194 65 12)',
+      800: 'rgb(154 52 18)',
+      900: 'rgb(124 45 18)',
+    },
+  },
+  spacing: {
+    section: {
+      sm: 'py-12 lg:py-16',
+      md: 'py-16 lg:py-20',
+      lg: 'py-20 lg:py-28',
+      xl: 'py-24 lg:py-32',
+    },
+    container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
+  },
+  typography: {
+    h1: 'text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight',
+    h2: 'text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight',
+    h3: 'text-2xl sm:text-3xl lg:text-4xl font-semibold',
+    h4: 'text-xl sm:text-2xl font-semibold',
+    body: 'text-base lg:text-lg leading-relaxed',
+    small: 'text-sm',
+  },
+  cards: {
+    base: 'bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300',
+    interactive: 'bg-white rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300',
+    bordered: 'bg-white border border-gray-200 rounded-2xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all duration-300',
+  },
+  buttons: {
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg',
+    secondary: 'bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg',
+    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-6 py-3 rounded-xl transition-all duration-200',
+  },
+} as const;

@@ -1,0 +1,109 @@
+Blueprint: The AI Field Assistant Tool
+Concept: A mobile-first web application for HVAC technicians in the field. It uses a voice-driven AI ("Earl") to act as an interactive co-pilot, guiding diagnostics, taking notes via voice, and automating service report generation.
+
+Core Features & User Workflow
+This is how a service call would look from the technician's perspective.
+
+1. The Pre-Call Briefing
+
+The Problem: Techs often arrive on site with minimal information. They waste time looking up customer history or equipment details in the van.
+
+The AI Solution: The tech opens the app and selects the day's first job. The AI's voice (Earl) initiates a briefing:
+
+"Alright Jordan, you're heading to 123 Main St. for a 'no heat' call. Customer is Paul Barrage. We've got a 15-year-old Lennox furnace on file for this location, model G61MP. Last service was 8 months ago, we replaced the filter. Based on the age and common faults, watch out for a potential ignitor or flame sensor issue. You ready to start the clock?"
+
+What it needs: Integration with your customer/job database to pull history and equipment data.
+
+2. Interactive Diagnostic & Information Retrieval
+
+The Problem: Techs need quick access to technical data—manuals, wiring diagrams, sequences of operation—but flipping through PDFs on a phone is slow and clunky.
+
+The AI Solution: The tech can ask questions in plain English while working.
+
+Tech: "Hey Earl, what's the proper resistance for the ignitor on this G61MP?"
+
+Earl AI: "For the Lennox G61MP, the ignitor resistance should be between 40 and 90 ohms at room temperature."
+
+Tech: "Okay, pull up the wiring diagram for the control board."
+
+Earl AI: "Bringing up the schematic now." (The screen displays the diagram).
+
+What it needs: A backend knowledge base. This could be a vector database populated with PDF manuals for common equipment. The AI searches this database to find and relay specific information.
+
+3. Hands-Free Voice Notes & Data Capture
+
+The Problem: Taking notes with greasy hands is a pain. Techs forget details between the basement and the van. Important measurements get lost.
+
+The AI Solution: The tech dictates notes and findings as they work.
+
+Tech: "Hey Earl, take a note. Static pressure on the return drop is negative 0.4 inches of water column."
+
+Earl AI: "Got it. Return static pressure: negative zero point four."
+
+Tech: "Add another note. Found a dirty flame sensor, will need cleaning."
+
+Earl AI: "Noted. Cleaned flame sensor."
+
+Tech: "Hey Earl, take a voice memo: The homeowner mentioned the noise is loudest in the master bedroom. Also, their dog is friendly."
+
+Earl AI: "Voice memo saved."
+
+What it needs: A robust speech-to-text API. It needs to be smart enough to differentiate commands ("take a note") from the note content itself. It should store both the transcribed text and the raw audio file for the voice memo.
+
+4. Automated Service Report Generation
+
+The Problem: Writing detailed, professional service reports at the end of a long day is the worst part of the job. It's tedious, and details get missed.
+
+The AI Solution: At the end of the call, the tech tells the AI they're done.
+
+Tech: "Hey Earl, I'm wrapping up."
+
+Earl AI: *"Okay, let's finalize the report. Here's what I've got:
+
+Customer Complaint: No heat.
+
+Diagnosis: Found failed ignitor, measured resistance was out of spec. Also noted dirty flame sensor.
+
+Action Taken: Replaced ignitor with part #XYZ. Cleaned and tested flame sensor.
+
+Final System Test: Furnace is operational. Combustion analysis passed, all readings are nominal.
+
+Voice Memos: You have one voice memo about the noise location.
+Does that all look right? Do you want to add anything else?"*
+
+The Output: The tech can make corrections via voice ("Change 'part #XYZ' to 'part #ABC'"). Once confirmed, the AI instantly generates a clean, professional PDF service report. It automatically pulls in the customer's info, the equipment details, and all the structured notes. The tech can have the customer sign on the screen, and the report is immediately emailed to both the customer and the office, and saved to the client portal.
+
+What it needs: A template engine to generate the PDF report from the structured data collected during the service call.
+
+Technical Implementation Considerations (How to Build it in Replit)
+Frontend (React):
+
+Voice Recognition: Use the browser's built-in SpeechRecognition API (Web Speech API) for capturing voice commands and dictation. Libraries like react-speech-recognition can simplify this.
+
+Voice Synthesis (Text-to-Speech): Use the browser's SpeechSynthesis API to give "Earl" his voice. This allows you to convert the AI's text responses into audio output.
+
+UI: The interface needs to be simple and high-contrast, designed for quick glances in poor lighting. It should clearly show the current task, transcribed text, and provide easy access to view diagrams or play back voice memos.
+
+Backend (Python/Flask):
+
+This is the brain of the operation. You'll need API endpoints to:
+
+Receive the transcribed text from the frontend.
+
+Process the text to understand the intent (is it a command, a note, or a question?).
+
+If it's a question, query your knowledge base (or a general LLM with specific context).
+
+If it's a note, save the structured data to your database (e.g., JobNotes table linked to the ServiceRequestID).
+
+Send the text response back to the frontend to be spoken.
+
+Handle the final "generate report" command by fetching all data for the job and creating the PDF.
+
+AI & Database:
+
+LLM Integration: You'll send structured prompts to an LLM API. The prompt needs to include the "Earl" persona, the context of the service call (equipment model, customer complaint), and the tech's transcribed request.
+
+Knowledge Base: For specific information retrieval (like from manuals), you would use a technique called Retrieval-Augmented Generation (RAG). You'd convert your PDF manuals into text and store them in a vector database. When a tech asks a question, the system first finds the most relevant chunks of text from the manuals and then feeds that text to the LLM along with the question to get a precise, cited answer.
+
+This tool is the definition of a "Pro" feature. It solves multiple, real-world problems for a technician. It's not just another calculator; it's a partner on the job site. Building this would be a massive undertaking, but it would also position AfterHours HVAC as a true technology leader in the trade.

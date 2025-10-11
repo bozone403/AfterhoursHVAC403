@@ -1,0 +1,191 @@
+🛡️ AFTERHOURS-AUDITOR v4 — Total Operational Readiness Validator
+Codename: AFTERHOURS-AUDITOR
+System: AfterHoursHVAC.ca
+Status Required: Deployment-ready. Zero surface-level bugs. Zero user-facing failure. No visual entropy.
+Enforcement Class: Dominion-Grade / WARFORGED
+
+🧱 CORE MODULES TO VALIDATE (v4)
+1. Homepage: Service Delivery System Hub
+Verify CTA Routing:
+
+“Get a Quote” → contact/intake form w/ full DB persistence
+
+“Book a Service” → booking interface (or calendar redirect after Stripe)
+
+Emergency Service Form:
+
+Name, Phone, Issue, Description — all required
+
+Form validation, duplicate prevention, and DB insertion required
+
+“Our Work” Section:
+
+Must pull from carousel DB
+
+Admin uploads → real preview, no placeholders or broken links
+
+2. Pricing Page: Tiered Product Sales Interface
+Card-Based Equipment UI:
+
+No dropdowns. Use cards with photos, specs, “Starting At” tags
+
+Furnace: 1-Stage ($5,999), 2-Stage ($6,499), Variable/Modulating ($8,999)
+
+AC: 16 SEER+, 1.5T–5T
+
+Stripe Checkout:
+
+“Buy Now” → working dynamic Stripe checkout (no “Missing Info” errors)
+
+Must pass system type + price correctly
+
+On success → redirect to calendar booking
+
+3. Calculators
+Pro Material Calculator:
+
+Real Alggin catalog pricing (2024)
+
+Dynamic quote generation
+
+“Charge Customer” → Stripe with quote total
+
+Free Tools:
+
+Energy savings, maintenance, simple estimators
+
+No paywall blocks
+
+Calculator Routing:
+
+All cards/buttons must link to correct .tsx pages
+
+No stale routes or blank pages
+
+4. Calendar Booking
+After Stripe success → auto-redirect to booking
+
+Must persist user, service type, price, and time in DB
+
+Optional: allow customer to modify/cancel with link
+
+5. Admin Dashboard (Exclusive to JordanBoz)
+Functionality:
+
+Upload/delete photos → carousel
+
+Manage forum: posts, replies, flags
+
+View/approve emergency requests, service bookings
+
+Edit homepage content
+
+Security:
+
+Role-restricted routing
+
+Session persistence
+
+403 for unauthorized attempts
+
+6. Photo Management
+Carousel uploader must:
+
+Handle >5MB files
+
+Provide preview, delete, DB sync
+
+Display properly on homepage
+
+Gallery section has been deprecated → confirm removal of routes + files
+
+7. Forum System
+Full CRUD:
+
+User: create post, reply to post, view thread
+
+Admin: delete any post/reply
+
+Preview carousel on homepage:
+
+Must show 3-5 recent topics
+
+Each card → links to actual thread
+
+8. User Auth + Settings
+Users must:
+
+Update email, password
+
+See Pro subscription status (if active)
+
+See full history: posts, payments, bookings
+
+Sessions must persist across tabs and logout properly
+
+9. Stripe Integration
+All chargeable components:
+
+Pricing page cards
+
+Pro calculators
+
+“Quote to Checkout” logic
+
+Stripe must:
+
+Accept full service price (no deposits)
+
+Return success → trigger calendar
+
+Track user + service in metadata
+
+10. Database Integrity
+Supabase or Drizzle:
+
+users, admins, bookings, quotes, carousel_images, forum_posts, calculator_logs, payments
+
+Missing columns? Broken migrations? Foreign key issues? Flag immediately.
+
+Use and() syntax for multi-condition filters (Drizzle-specific)
+
+11. Visual Consistency
+Orange + Blue theme only
+
+No off-brand styling (green, purple, unstyled cards, misaligned text)
+
+Consistent spacing, margins, radii, hover effects
+
+Typography: same font stack and sizes platform-wide
+
+12. Routing & Orphaned Pages
+Validate every menu tab and link
+
+No 404s
+
+Delete all unused .tsx files:
+
+pricing-new.tsx, admin-photos.tsx, gallery.tsx, etc.
+
+Confirm App.tsx has clean route map only to current components
+
+13. Fail-State UX
+Any error (form, payment, image) must:
+
+Show clear message
+
+Log in console/server
+
+Never result in blank screen, redirect loop, or 404
+
+🧾 REPORT FORMAT — MILITARY PRECISION
+yaml
+Copy
+Edit
+📄 Module: [e.g., Pricing Page]
+🎯 Purpose: [e.g., Sell furnace system]
+✅/❌ Status: [Working / Broken / Missing / Bugged]
+🚫 Failure Mode: [Short description]
+🔧 Code Fix Location: [file path + suggested change]
+🧱 DB/API Dependency: [e.g., Stripe SKU, Supabase table]
+🎨 Theme Violation?: [Yes/No]
