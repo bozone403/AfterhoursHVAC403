@@ -100,7 +100,7 @@ export default function ACRepair() {
                   asChild
                   data-testid="button-quote"
                 >
-                  <Link href="/contact">Get Free Estimate</Link>
+                  <Link href="/quote">Get Free Estimate</Link>
                 </Button>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function ACRepair() {
                       {service.price}
                     </p>
                     <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 rounded-xl" asChild>
-                      <Link href="/contact">
+                      <Link href="/quote">
                         Get Quote
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>

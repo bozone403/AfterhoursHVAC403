@@ -162,6 +162,23 @@ async function initializeDatabase() {
     )
   `);
 
+  // Service bookings table (for Stripe purchases)
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS service_bookings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_name TEXT,
+      customer_email TEXT,
+      customer_phone TEXT,
+      service_name TEXT NOT NULL,
+      service_price TEXT,
+      service_description TEXT,
+      payment_status TEXT DEFAULT 'pending',
+      stripe_session_id TEXT,
+      status TEXT DEFAULT 'confirmed',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   console.log('Tables created successfully!');
 
   // Create admin users

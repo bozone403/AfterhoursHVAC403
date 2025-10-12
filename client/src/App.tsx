@@ -22,6 +22,7 @@ import About from "@/pages/about";
 
 import Pricing from "@/pages/pricing-cards";
 import Contact from "@/pages/contact";
+import Quote from "@/pages/quote";
 import Calculators from "@/pages/calculators";
 import MaterialEstimator from "@/pages/calculators/material-estimator-alggin";
 import CommercialEstimator from "@/pages/calculators/commercial-estimator";
@@ -109,6 +110,7 @@ function Router() {
         <Route path="/shop" component={ResidentialServices} />
         <Route path="/pricing" component={Pricing} />
         <Route path="/contact" component={Contact} />
+        <Route path="/quote" component={Quote} />
         <Route path="/calculators" component={Calculators} />
         <Route path="/calculators/material-estimator" component={MaterialEstimator} />
         <Route path="/calculators/commercial-estimator" component={CommercialEstimator} />

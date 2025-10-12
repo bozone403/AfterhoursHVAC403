@@ -7,23 +7,31 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(cors({
-  origin: (process.env.CORS_ORIGIN || "").split(',').filter(Boolean).length > 0
-    ? (process.env.CORS_ORIGIN as string).split(',').map(o => o.trim())
-    : true,
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000', 
+    'http://localhost:5000',
+    'https://afterhourshvac403.onrender.com',
+    'https://afterhourshvac.ca',
+    'https://www.afterhourshvac.ca'
+  ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  secret: process.env.SESSION_SECRET || 'afterhours-hvac-session-secret-2024',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Set to false for development, true for production with HTTPS
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax' // Allow cross-site requests
   }
 }));
 

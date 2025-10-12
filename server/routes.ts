@@ -541,4 +541,74 @@ export function registerRoutes(app: Express): void {
       res.status(500).json({ error: "Failed to submit job application" });
     }
   });
+
+  // Stripe checkout session creation
+  app.post("/api/create-checkout-session", async (req: Request, res: Response) => {
+    try {
+      const { serviceName, price, description, category } = req.body;
+      
+      // For now, return a mock session - in production you'd create actual Stripe session
+      const mockSession = {
+        id: `cs_${Date.now()}`,
+        url: `/payment-confirmation?session_id=cs_${Date.now()}&service=${encodeURIComponent(serviceName)}`,
+        service: {
+          name: serviceName,
+          price: price,
+          description: description,
+          category: category
+        }
+      };
+
+      res.json({ sessionId: mockSession.id, url: mockSession.url });
+    } catch (error) {
+      console.error("Create checkout session error:", error);
+      res.status(500).json({ error: "Failed to create checkout session" });
+    }
+  });
+
+  // Service bookings (for tracking Stripe purchases)
+  app.post("/api/service-bookings", async (req: Request, res: Response) => {
+    try {
+      const bookingData = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO service_bookings (
+          customer_name, customer_email, customer_phone, service_name, 
+          service_price, service_description, payment_status, 
+          stripe_session_id, created_at, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'confirmed')
+      `).run(
+        bookingData.customerName || '',
+        bookingData.customerEmail || '',
+        bookingData.customerPhone || '',
+        bookingData.serviceName,
+        bookingData.servicePrice,
+        bookingData.serviceDescription || '',
+        bookingData.paymentStatus || 'pending',
+        bookingData.stripeSessionId || ''
+      );
+
+      res.json({ id: result.lastInsertRowid, message: "Service booking created successfully" });
+    } catch (error) {
+      console.error("Service booking error:", error);
+      res.status(500).json({ error: "Failed to create service booking" });
+    }
+  });
+
+  app.get("/api/admin/service-bookings", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const bookings = sqlite.prepare('SELECT * FROM service_bookings ORDER BY created_at DESC').all();
+      res.json(bookings);
+    } catch (error) {
+      console.error("Get service bookings error:", error);
+      res.status(500).json({ error: "Failed to get service bookings" });
+    }
+  });
 }

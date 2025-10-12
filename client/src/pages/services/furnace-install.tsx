@@ -104,7 +104,7 @@ export default function FurnaceInstallation() {
                   asChild
                   data-testid="button-quote"
                 >
-                  <Link href="/contact">Get Free Estimate</Link>
+                  <Link href="/quote">Get Free Estimate</Link>
                 </Button>
               </div>
             </div>
@@ -186,15 +186,32 @@ export default function FurnaceInstallation() {
                   
                   <div className="text-center">
                     <p className="text-sm text-slate-500 mb-1">Starting at</p>
-                    <p className="text-3xl font-black text-slate-900 mb-6">
+                    <p className="text-3xl font-black text-slate-900 mb-4">
                       {furnace.startingPrice}
                     </p>
-                    <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 rounded-xl" asChild>
-                      <Link href="/contact">
-                        Get Quote
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
-                    </Button>
+                    <div className="space-y-3">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
+                        onClick={() => {
+                          // Navigate to Stripe checkout with furnace data
+                          const serviceData = {
+                            name: furnace.name,
+                            price: furnace.startingPrice,
+                            description: `${furnace.name} - ${furnace.efficiency}`,
+                            category: 'furnace-installation'
+                          };
+                          window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                        }}
+                      >
+                        Buy Now - {furnace.startingPrice}
+                      </Button>
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 rounded-xl" asChild>
+                        <Link href="/quote">
+                          Get Custom Quote
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
