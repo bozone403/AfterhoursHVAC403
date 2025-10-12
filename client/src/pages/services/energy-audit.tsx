@@ -157,7 +157,7 @@ export default function EnergyAudit() {
                   asChild
                   data-testid="button-schedule"
                 >
-                  <Link href="/quote">Schedule Audit</Link>
+                  <Link href="/contact">Schedule Audit</Link>
                 </Button>
               </div>
             </div>
@@ -258,7 +258,7 @@ export default function EnergyAudit() {
                     asChild
                     data-testid={`button-schedule-audit-${index}`}
                   >
-                    <Link href="/quote">
+                    <Link href="/contact">
                       Schedule Audit
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>

@@ -410,7 +410,12 @@ const Careers = () => {
                     <Button 
                       className="flex-1"
                       onClick={() => {
-                        setLocation(`/job-application?position=${encodeURIComponent(position.title)}`);
+                        setSelectedPosition(position.title);
+                        setShowApplication(true);
+                        // Scroll to application form
+                        setTimeout(() => {
+                          document.getElementById('application-form')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
                       }}
                     >
                       Apply Now
@@ -432,7 +437,7 @@ const Careers = () => {
 
         {/* Application Form */}
         {showApplication && (
-          <Card className="max-w-2xl mx-auto">
+          <Card id="application-form" className="max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />

@@ -111,7 +111,7 @@ export default function DuctCleaning() {
                   asChild
                   data-testid="button-quote"
                 >
-                  <Link href="/quote">Free Air Quality Assessment</Link>
+                  <Link href="/contact">Free Air Quality Assessment</Link>
                 </Button>
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function DuctCleaning() {
                 asChild
                 data-testid="button-schedule-service"
               >
-                <Link href="/quote">
+                <Link href="/contact">
                   Schedule Service
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
