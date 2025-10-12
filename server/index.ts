@@ -60,16 +60,15 @@ app.use((req, res, next) => {
 (async () => {
   console.log("Starting server setup...");
   
-  // Initialize database in production
-  if (process.env.NODE_ENV === 'production') {
-    console.log("Initializing database for production...");
-    try {
-      const { initializeDatabase } = await import("./init-db");
-      await initializeDatabase();
-      console.log("Database initialized successfully");
-    } catch (error) {
-      console.error("Database initialization error:", error);
-    }
+  // Initialize database
+  console.log("Initializing database...");
+  try {
+    const { initializeDatabase } = await import("./init-db");
+    await initializeDatabase();
+    console.log("Database initialized successfully");
+  } catch (error) {
+    console.error("Database initialization error:", error);
+    // Don't exit, continue with server startup
   }
   
   console.log("About to register routes...");

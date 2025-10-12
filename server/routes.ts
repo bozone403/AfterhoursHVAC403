@@ -52,6 +52,26 @@ export function registerRoutes(app: Express): void {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  app.get("/api/debug/users", async (req, res) => {
+    try {
+      // Simple database query to check users
+      const { sqlite } = await import('./db');
+      const users = sqlite.prepare('SELECT id, username, email, role, is_admin FROM users').all();
+      res.json({ 
+        count: users.length, 
+        users: users.map((u: any) => ({ 
+          id: u.id, 
+          username: u.username, 
+          email: u.email, 
+          role: u.role,
+          isAdmin: u.is_admin 
+        })) 
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to get users", details: error?.message || "Unknown error" });
+    }
+  });
+
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
       const { username, password } = loginSchema.parse(req.body);
