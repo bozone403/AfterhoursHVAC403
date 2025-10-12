@@ -8,6 +8,24 @@ const loginSchema = z.object({
   password: z.string().min(1)
 });
 
+const registerSchema = z.object({
+  username: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string().optional(),
+  lastName: z.string().optional()
+});
+
+// Admin emails that get automatic admin access
+const ADMIN_EMAILS = [
+  'jordan@afterhourshvac.ca',
+  'Jordan@Afterhourshvac.ca', 
+  'derek@afterhourshvac.ca',
+  'Derek@Afterhourshvac.ca',
+  'admin@afterhourshvac.ca',
+  'Admin@afterhourshvac.ca'
+];
+
 const contactSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -72,6 +90,30 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  app.post("/api/debug/test-register", async (req, res) => {
+    try {
+      // Test registration for Jordan
+      const testData = {
+        username: "jordan_new",
+        email: "Jordan@Afterhourshvac.ca",
+        password: "newpassword123",
+        firstName: "Jordan",
+        lastName: "Boisclair"
+      };
+      
+      const response = await fetch(`${req.protocol}://${req.get('host')}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testData)
+      });
+      
+      const result = await response.json();
+      res.json({ testData, result, status: response.status });
+    } catch (error: any) {
+      res.status(500).json({ error: "Test registration failed", details: error?.message });
+    }
+  });
+
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
       const { username, password } = loginSchema.parse(req.body);
@@ -107,6 +149,64 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
+    try {
+      const { username, email, password, firstName, lastName } = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username) || await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists" });
+      }
+
+      // Check if this email should get admin access
+      const isAdmin = ADMIN_EMAILS.includes(email.toLowerCase()) || ADMIN_EMAILS.includes(email);
+      
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      
+      // Create user with admin privileges if email matches
+      const { sqlite } = await import('./db');
+      const result = sqlite.prepare(`
+        INSERT INTO users (
+          username, email, password, first_name, last_name, role, 
+          is_admin, has_pro_access, has_pro, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).run(
+        username,
+        email,
+        hashedPassword,
+        firstName || '',
+        lastName || '',
+        isAdmin ? 'admin' : 'user',
+        isAdmin ? 1 : 0,
+        isAdmin ? 1 : 0,
+        isAdmin ? 1 : 0
+      );
+
+      // Auto-login the new user
+      const newUser = {
+        id: result.lastInsertRowid,
+        username,
+        email,
+        role: isAdmin ? 'admin' : 'user',
+        isAdmin
+      };
+
+      (req.session as any).userId = newUser.id;
+      (req.session as any).user = newUser;
+
+      res.json({
+        user: newUser,
+        message: isAdmin ? "Admin account created successfully!" : "Account created successfully!"
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
     }
   });
 
