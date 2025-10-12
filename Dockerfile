@@ -19,9 +19,7 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove dev dependencies after build
-RUN npm prune --omit=dev
-
+# Keep dev dependencies for dynamic imports in development mode
 # Remove build dependencies to reduce image size
 RUN apk del python3 make g++
 
