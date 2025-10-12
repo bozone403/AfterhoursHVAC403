@@ -43,15 +43,6 @@ const blogPostSchema = z.object({
   published: z.boolean().default(false)
 });
 
-const teamMemberSchema = z.object({
-  name: z.string().min(1),
-  role: z.string().min(1),
-  experience: z.string().optional(),
-  description: z.string().optional(),
-  specialties: z.string().optional(),
-  photoUrl: z.string().optional()
-});
-
 const jobApplicationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -59,7 +50,37 @@ const jobApplicationSchema = z.object({
   phone: z.string().min(1),
   position: z.string().min(1),
   experience: z.string().min(1),
+  availability: z.string().min(1),
   coverLetter: z.string().optional()
+});
+
+const serviceRequestSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  serviceType: z.string().min(1),
+  description: z.string().min(1),
+  urgency: z.string().default("normal"),
+  preferredDate: z.string().optional(),
+  address: z.string().optional()
+});
+
+const emergencyRequestSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  phone: z.string().min(1),
+  address: z.string().min(1),
+  description: z.string().min(1),
+  urgency: z.string().default("high")
+});
+
+const teamMemberSchema = z.object({
+  name: z.string().min(1),
+  role: z.string().min(1),
+  experience: z.string().optional(),
+  description: z.string().optional(),
+  specialties: z.string().optional(),
+  photoUrl: z.string().optional()
 });
 
 export function registerRoutes(app: Express): void {
@@ -90,27 +111,90 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/debug/test-register", async (req, res) => {
+  app.get("/api/admin/export-data", async (req, res) => {
     try {
-      // Test registration for Jordan
-      const testData = {
-        username: "jordan_new",
-        email: "Jordan@Afterhourshvac.ca",
-        password: "newpassword123",
-        firstName: "Jordan",
-        lastName: "Boisclair"
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      
+      // Export all important data
+      const users = sqlite.prepare('SELECT * FROM users').all();
+      const contacts = sqlite.prepare('SELECT * FROM contact_submissions').all();
+      const blogPosts = sqlite.prepare('SELECT * FROM blog_posts').all();
+      const teamMembers = sqlite.prepare('SELECT * FROM team_members').all();
+      
+      const exportData = {
+        users,
+        contacts,
+        blogPosts,
+        teamMembers,
+        exportDate: new Date().toISOString(),
+        version: "1.0"
       };
-      
-      const response = await fetch(`${req.protocol}://${req.get('host')}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(testData)
-      });
-      
-      const result = await response.json();
-      res.json({ testData, result, status: response.status });
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="afterhours-hvac-data.json"');
+      res.json(exportData);
     } catch (error: any) {
-      res.status(500).json({ error: "Test registration failed", details: error?.message });
+      res.status(500).json({ error: "Export failed", details: error?.message });
+    }
+  });
+
+  app.post("/api/admin/import-data", async (req, res) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { users, contacts, blogPosts, teamMembers } = req.body;
+      const { sqlite } = await import('./db');
+      
+      let imported = { users: 0, contacts: 0, blogPosts: 0, teamMembers: 0 };
+
+      // Import users (skip if already exists)
+      if (users) {
+        for (const userData of users) {
+          try {
+            sqlite.prepare(`
+              INSERT OR IGNORE INTO users (
+                username, email, password, first_name, last_name, role, 
+                is_admin, has_pro_access, has_pro, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `).run(
+              userData.username, userData.email, userData.password,
+              userData.first_name, userData.last_name, userData.role,
+              userData.is_admin, userData.has_pro_access, userData.has_pro,
+              userData.created_at
+            );
+            imported.users++;
+          } catch (e) { /* Skip duplicates */ }
+        }
+      }
+
+      // Import other data similarly...
+      if (contacts) {
+        for (const contact of contacts) {
+          try {
+            sqlite.prepare(`
+              INSERT OR IGNORE INTO contact_submissions (
+                name, email, phone, message, service_type, urgency, created_at, status
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `).run(
+              contact.name, contact.email, contact.phone, contact.message,
+              contact.service_type, contact.urgency, contact.created_at, contact.status
+            );
+            imported.contacts++;
+          } catch (e) { /* Skip duplicates */ }
+        }
+      }
+
+      res.json({ message: "Data imported successfully", imported });
+    } catch (error: any) {
+      res.status(500).json({ error: "Import failed", details: error?.message });
     }
   });
 
@@ -428,14 +512,17 @@ export function registerRoutes(app: Express): void {
       if (!user || !user.isAdmin) {
         return res.status(401).json({ error: "Admin access required" });
       }
-      res.json([user]);
+
+      const { sqlite } = await import('./db');
+      const users = sqlite.prepare('SELECT id, username, email, role, is_admin, created_at FROM users').all();
+      res.json(users);
     } catch (error) {
-      console.error("Get admin users error:", error);
-      res.status(500).json({ error: "Failed to get admin users" });
+      console.error("Get users error:", error);
+      res.status(500).json({ error: "Failed to get users" });
     }
   });
 
-  // Job applications
+  // Job Applications endpoints
   app.post("/api/job-applications", async (req: Request, res: Response) => {
     try {
       const applicationData = jobApplicationSchema.parse(req.body);

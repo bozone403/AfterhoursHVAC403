@@ -113,6 +113,55 @@ async function initializeDatabase() {
     )
   `);
 
+  // Job applications table
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS job_applications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      position TEXT NOT NULL,
+      experience TEXT NOT NULL,
+      availability TEXT NOT NULL,
+      cover_letter TEXT,
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Service requests table
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS service_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      service_type TEXT NOT NULL,
+      description TEXT NOT NULL,
+      urgency TEXT DEFAULT 'normal',
+      preferred_date TEXT,
+      address TEXT,
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Emergency requests table
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS emergency_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      address TEXT NOT NULL,
+      description TEXT NOT NULL,
+      urgency TEXT DEFAULT 'high',
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   console.log('Tables created successfully!');
 
   // Create admin users
