@@ -227,6 +227,115 @@ export function registerRoutes(app: Express): void {
     res.json({ user });
   });
 
+  // Frontend compatibility routes (frontend expects these paths)
+  app.get("/api/user", (req: Request, res: Response) => {
+    const user = (req.session as any)?.user;
+    if (!user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    res.json(user); // Return user directly, not wrapped in {user}
+  });
+
+  app.post("/api/login", async (req: Request, res: Response) => {
+    try {
+      const { username, password } = loginSchema.parse(req.body);
+      const user = await storage.getUserByUsername(username) || await storage.getUserByEmail(username);
+      
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      (req.session as any).userId = user.id;
+      (req.session as any).user = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.isAdmin
+      };
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.isAdmin
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/register", async (req: Request, res: Response) => {
+    try {
+      const { username, email, password, firstName, lastName } = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username) || await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists" });
+      }
+
+      // Check if this email should get admin access
+      const isAdmin = ADMIN_EMAILS.includes(email.toLowerCase()) || ADMIN_EMAILS.includes(email);
+      
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      
+      // Create user with admin privileges if email matches
+      const { sqlite } = await import('./db');
+      const result = sqlite.prepare(`
+        INSERT INTO users (
+          username, email, password, first_name, last_name, role, 
+          is_admin, has_pro_access, has_pro, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).run(
+        username,
+        email,
+        hashedPassword,
+        firstName || '',
+        lastName || '',
+        isAdmin ? 'admin' : 'user',
+        isAdmin ? 1 : 0,
+        isAdmin ? 1 : 0,
+        isAdmin ? 1 : 0
+      );
+
+      // Auto-login the new user
+      const newUser = {
+        id: result.lastInsertRowid,
+        username,
+        email,
+        role: isAdmin ? 'admin' : 'user',
+        isAdmin
+      };
+
+      (req.session as any).userId = newUser.id;
+      (req.session as any).user = newUser;
+
+      res.json(newUser); // Return user directly for frontend compatibility
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
+  app.post("/api/logout", (req: Request, res: Response) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
   app.post("/api/admin/contacts", async (req: Request, res: Response) => {
     try {
       const contactData = contactSchema.parse(req.body);
