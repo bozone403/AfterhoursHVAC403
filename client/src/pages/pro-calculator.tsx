@@ -567,7 +567,7 @@ const ProCalculator = () => {
                 <div className="relative space-y-8">
                   <div className="space-y-2">
                     <Label htmlFor="squareFootage" className="text-white text-lg font-semibold">Square Footage</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-gray-300 focus:border-amber-500"
                       id="squareFootage"
                       type="number"
                       placeholder="e.g., 1800"
@@ -607,7 +607,7 @@ const ProCalculator = () => {
 
                   <div>
                     <Label htmlFor="systemAge" className="text-white">System Age (if applicable)</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-gray-300 focus:border-amber-500"
                       id="systemAge"
                       type="number"
                       placeholder="e.g., 15"
