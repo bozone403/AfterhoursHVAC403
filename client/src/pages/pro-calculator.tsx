@@ -483,7 +483,7 @@ const ProCalculator = () => {
               
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                  <Input className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300 focus:border-amber-500"
                     placeholder="Search materials (furnace, ductwork, thermostat, etc.)"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

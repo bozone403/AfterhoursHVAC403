@@ -328,27 +328,42 @@ const AirConditioningShop = () => {
                   </div>
 
                   {/* CTA Buttons */}
-                  <div className="flex gap-3">
+                  <div className="space-y-3">
                     <Button 
-                      className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:scale-105 transition-all"
-                      data-testid={`button-quote-${ac.id}`}
-                      asChild
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:scale-105 transition-all"
+                      data-testid={`button-buy-${ac.id}`}
+                      onClick={() => {
+                        const serviceData = {
+                          name: ac.name,
+                          price: `$${ac.price.toLocaleString()}`,
+                          description: `${ac.name} - ${ac.specs.efficiency}`,
+                          category: 'ac-purchase'
+                        };
+                        window.location.href = `/checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                      }}
                     >
-                      <Link href="/contact">
-                        Get Quote
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
+                      Buy Now - ${ac.price.toLocaleString()}
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      className="border-2 hover:bg-gray-50"
-                      data-testid={`button-call-${ac.id}`}
-                      asChild
-                    >
-                      <Link href="/contact">
+                    <div className="flex gap-3">
+                      <Button 
+                        className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:scale-105 transition-all"
+                        data-testid={`button-quote-${ac.id}`}
+                        asChild
+                      >
+                        <Link href="/quote">
+                          Get Quote
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="border-2 hover:bg-gray-50"
+                        data-testid={`button-call-${ac.id}`}
+                        onClick={() => window.location.href = 'tel:4036136014'}
+                      >
                         <Phone className="w-4 h-4" />
-                      </Link>
-                    </Button>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
