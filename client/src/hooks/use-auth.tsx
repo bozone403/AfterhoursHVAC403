@@ -86,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include', // Include cookies for session management
         body: JSON.stringify(credentials),
       });
 
@@ -120,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include', // Include cookies for session management
         body: JSON.stringify(userData),
       });
 
@@ -151,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     mutationFn: async () => {
       const res = await fetch("/api/logout", {
         method: "POST",
+        credentials: 'include', // Include cookies for session management
       });
 
       if (!res.ok) {
