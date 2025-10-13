@@ -178,15 +178,65 @@ export default function ACRepair() {
                   </ul>
                   
                   <div className="text-center">
-                    <p className="text-3xl font-black text-slate-900 mb-6">
+                    <p className="text-3xl font-black text-slate-900 mb-4">
                       {service.price}
                     </p>
-                    <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 rounded-xl" asChild>
-                      <Link href="/quote">
-                        Get Quote
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
-                    </Button>
+                    <div className="space-y-3">
+                      {service.title.includes("Repair") && (
+                        <Button 
+                          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
+                          onClick={() => {
+                            const serviceData = {
+                              name: service.title,
+                              price: "$149",
+                              description: service.description,
+                              category: 'ac-repair'
+                            };
+                            window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                          }}
+                        >
+                          Book Now - $149
+                        </Button>
+                      )}
+                      {service.title.includes("Installation") && (
+                        <Button 
+                          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
+                          onClick={() => {
+                            const serviceData = {
+                              name: service.title,
+                              price: "$6,499",
+                              description: service.description,
+                              category: 'ac-installation'
+                            };
+                            window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                          }}
+                        >
+                          Buy Now - Starting at $6,499
+                        </Button>
+                      )}
+                      {service.title.includes("Maintenance") && (
+                        <Button 
+                          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
+                          onClick={() => {
+                            const serviceData = {
+                              name: service.title,
+                              price: "$299",
+                              description: service.description,
+                              category: 'ac-maintenance'
+                            };
+                            window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                          }}
+                        >
+                          Buy Now - $299/year
+                        </Button>
+                      )}
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 rounded-xl" asChild>
+                        <Link href="/quote">
+                          Get Custom Quote
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>

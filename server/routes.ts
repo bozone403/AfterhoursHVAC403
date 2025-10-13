@@ -526,19 +526,136 @@ export function registerRoutes(app: Express): void {
   app.post("/api/job-applications", async (req: Request, res: Response) => {
     try {
       const applicationData = jobApplicationSchema.parse(req.body);
+      const { sqlite } = await import('./db');
       
-      // For now, just log the application and return success
-      // In a real implementation, you'd save this to a database
-      console.log("Job application received:", applicationData);
-      
+      const result = sqlite.prepare(`
+        INSERT INTO job_applications (
+          first_name, last_name, email, phone, position, 
+          experience, availability, cover_letter, created_at, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'new')
+      `).run(
+        applicationData.firstName,
+        applicationData.lastName,
+        applicationData.email,
+        applicationData.phone,
+        applicationData.position,
+        applicationData.experience,
+        applicationData.availability,
+        applicationData.coverLetter || ''
+      );
+
       res.json({ 
         message: "Application submitted successfully",
-        id: Date.now(), // Simple ID for demo
+        id: result.lastInsertRowid,
         status: "received"
       });
     } catch (error) {
       console.error("Job application error:", error);
       res.status(500).json({ error: "Failed to submit job application" });
+    }
+  });
+
+  app.get("/api/admin/job-applications", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const applications = sqlite.prepare('SELECT * FROM job_applications ORDER BY created_at DESC').all();
+      res.json(applications);
+    } catch (error) {
+      console.error("Get job applications error:", error);
+      res.status(500).json({ error: "Failed to get job applications" });
+    }
+  });
+
+  // Service Requests endpoints
+  app.post("/api/service-requests", async (req: Request, res: Response) => {
+    try {
+      const requestData = serviceRequestSchema.parse(req.body);
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO service_requests (
+          name, email, phone, service_type, description, 
+          urgency, preferred_date, address, created_at, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'new')
+      `).run(
+        requestData.name,
+        requestData.email,
+        requestData.phone || '',
+        requestData.serviceType,
+        requestData.description,
+        requestData.urgency,
+        requestData.preferredDate || '',
+        requestData.address || ''
+      );
+
+      res.json({ id: result.lastInsertRowid, message: "Service request submitted successfully" });
+    } catch (error) {
+      console.error("Service request error:", error);
+      res.status(500).json({ error: "Failed to submit service request" });
+    }
+  });
+
+  app.get("/api/admin/service-requests", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const requests = sqlite.prepare('SELECT * FROM service_requests ORDER BY created_at DESC').all();
+      res.json(requests);
+    } catch (error) {
+      console.error("Get service requests error:", error);
+      res.status(500).json({ error: "Failed to get service requests" });
+    }
+  });
+
+  // Emergency Requests endpoints
+  app.post("/api/emergency-requests", async (req: Request, res: Response) => {
+    try {
+      const requestData = emergencyRequestSchema.parse(req.body);
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO emergency_requests (
+          name, email, phone, address, description, 
+          urgency, created_at, status
+        ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'new')
+      `).run(
+        requestData.name,
+        requestData.email,
+        requestData.phone,
+        requestData.address,
+        requestData.description,
+        requestData.urgency
+      );
+
+      res.json({ id: result.lastInsertRowid, message: "Emergency request submitted successfully" });
+    } catch (error) {
+      console.error("Emergency request error:", error);
+      res.status(500).json({ error: "Failed to submit emergency request" });
+    }
+  });
+
+  app.get("/api/admin/emergency-requests", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const requests = sqlite.prepare('SELECT * FROM emergency_requests ORDER BY created_at DESC').all();
+      res.json(requests);
+    } catch (error) {
+      console.error("Get emergency requests error:", error);
+      res.status(500).json({ error: "Failed to get emergency requests" });
     }
   });
 
