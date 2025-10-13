@@ -255,16 +255,32 @@ export default function DuctCleaning() {
               <div className="text-5xl font-black text-white mb-6">
                 Starting at $3,199
               </div>
-              <Button 
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105" 
-                asChild
-                data-testid="button-schedule-service"
-              >
-                <Link href="/quote">
-                  Schedule Service
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
+              <div className="space-y-4">
+                <Button 
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-green-500/50 transition-all hover:scale-105"
+                  onClick={() => {
+                    const serviceData = {
+                      name: "Complete Duct Cleaning Service",
+                      price: "$3,199",
+                      description: "Comprehensive duct cleaning including supply/return ducts, trunk lines, grilles, and HVAC unit cleaning",
+                      category: 'duct-cleaning'
+                    };
+                    window.location.href = `/checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                  }}
+                >
+                  Book Now - $3,199
+                </Button>
+                <Button 
+                  className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105" 
+                  asChild
+                  data-testid="button-schedule-service"
+                >
+                  <Link href="/quote">
+                    Get Custom Quote
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

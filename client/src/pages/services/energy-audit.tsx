@@ -249,20 +249,36 @@ export default function EnergyAudit() {
                     ))}
                   </ul>
                   
-                  <Button 
-                    className={`w-full ${
-                      service.popular 
-                        ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700' 
-                        : 'bg-slate-900 hover:bg-slate-800'
-                    } text-white font-bold py-6 rounded-xl shadow-lg transition-all hover:scale-105`}
-                    asChild
-                    data-testid={`button-schedule-audit-${index}`}
-                  >
-                    <Link href="/quote">
-                      Schedule Audit
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
+                      onClick={() => {
+                        const serviceData = {
+                          name: service.name,
+                          price: service.price,
+                          description: service.description,
+                          category: 'energy-audit'
+                        };
+                        window.location.href = `/checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                      }}
+                    >
+                      Book Now - {service.price}
+                    </Button>
+                    <Button 
+                      className={`w-full ${
+                        service.popular 
+                          ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700' 
+                          : 'bg-slate-900 hover:bg-slate-800'
+                      } text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105`}
+                      asChild
+                      data-testid={`button-schedule-audit-${index}`}
+                    >
+                      <Link href="/quote">
+                        Get Custom Quote
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

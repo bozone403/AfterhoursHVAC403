@@ -240,20 +240,36 @@ export default function HVACMaintenance() {
                     ))}
                   </ul>
                   
-                  <Button 
-                    className={`w-full ${
-                      plan.popular 
-                        ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700' 
-                        : 'bg-slate-900 hover:bg-slate-800'
-                    } text-white font-bold py-6 rounded-xl shadow-lg transition-all hover:scale-105`}
-                    asChild
-                    data-testid={`button-select-plan-${index}`}
-                  >
-                    <Link href="/shop/maintenance-plans">
-                      Select Plan
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
+                      onClick={() => {
+                        const serviceData = {
+                          name: plan.name,
+                          price: plan.price,
+                          description: plan.description,
+                          category: 'maintenance-plan'
+                        };
+                        window.location.href = `/checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
+                      }}
+                    >
+                      Buy Now - {plan.price}
+                    </Button>
+                    <Button 
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700' 
+                          : 'bg-slate-900 hover:bg-slate-800'
+                      } text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105`}
+                      asChild
+                      data-testid={`button-select-plan-${index}`}
+                    >
+                      <Link href="/quote">
+                        Get Custom Quote
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
