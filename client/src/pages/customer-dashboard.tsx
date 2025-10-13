@@ -41,7 +41,7 @@ const CustomerDashboard = () => {
       case 'completed': return 'text-green-600 bg-green-50';
       case 'in_progress': return 'text-blue-600 bg-blue-50';
       case 'scheduled': return 'text-purple-600 bg-purple-50';
-      case 'pending': return 'text-yellow-600 bg-yellow-50';
+      case 'pending': return 'text-orange-700 bg-orange-50';
       case 'cancelled': return 'text-red-600 bg-red-50';
       default: return 'text-gray-600 bg-gray-50';
     }
@@ -73,7 +73,7 @@ const CustomerDashboard = () => {
             </div>
             <div className="flex items-center gap-3">
               {user?.hasProAccess && (
-                <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                <Badge className="bg-amber-100 text-amber-800 border-amber-200">
                   <Star className="h-3 w-3 mr-1" />
                   Pro Member
                 </Badge>
@@ -360,7 +360,7 @@ const CustomerDashboard = () => {
                     <div className="flex items-center gap-2">
                       {user?.hasProAccess ? (
                         <>
-                          <Star className="h-4 w-4 text-yellow-500" />
+                          <Star className="h-4 w-4 text-amber-600" />
                           <p className="text-gray-900 font-medium">Pro Member</p>
                         </>
                       ) : (
@@ -373,9 +373,9 @@ const CustomerDashboard = () => {
                   </div>
                   
                   {user?.hasProAccess ? (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                      <h4 className="font-medium text-yellow-800 mb-2">Pro Benefits Active</h4>
-                      <ul className="text-sm text-yellow-700 space-y-1">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <h4 className="font-medium text-amber-800 mb-2">Pro Benefits Active</h4>
+                      <ul className="text-sm text-amber-700 space-y-1">
                         <li>• Priority scheduling</li>
                         <li>• Advanced diagnostic tools</li>
                         <li>• Detailed cost calculators</li>

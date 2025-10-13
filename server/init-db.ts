@@ -238,7 +238,22 @@ async function initializeDatabase() {
       
       console.log(`Created admin user: ${userData.email}`);
     } else {
-      console.log(`Admin user already exists: ${userData.email}`);
+      // Update existing user to ensure admin privileges
+      sqlite.prepare(`
+        UPDATE users SET 
+          role = ?, 
+          is_admin = ?, 
+          has_pro_access = ?, 
+          has_pro = ?
+        WHERE email = ?
+      `).run(
+        userData.role,
+        userData.isAdmin ? 1 : 0,
+        userData.hasProAccess ? 1 : 0,
+        userData.hasPro ? 1 : 0,
+        userData.email
+      );
+      console.log(`Updated admin privileges for existing user: ${userData.email}`);
     }
   }
 

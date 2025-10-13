@@ -135,50 +135,65 @@ const CheckoutForm = ({ clientSecret }: { clientSecret: string }) => {
             <CreditCard className="h-4 w-4 mr-2" />
             Complete Payment
           </>
-        )}
       </Button>
     </form>
   );
 };
 
-export default function Checkout() {
-  const [clientSecret, setClientSecret] = useState("");
+export const Checkout = () => {
   const [location] = useLocation();
-  
+  const [clientSecret, setClientSecret] = useState('');
+  const [serviceData, setServiceData] = useState<any>(null);
+  const [error, setError] = useState('');
+
   useEffect(() => {
-    // Get client secret from URL params
     const urlParams = new URLSearchParams(window.location.search);
-    const secret = urlParams.get('client_secret');
+    const serviceParam = urlParams.get('service');
     
-    if (secret) {
-      setClientSecret(secret);
-    } else {
-      setClientSecret('missing');
+    if (serviceParam) {
+      try {
+        const parsedService = JSON.parse(decodeURIComponent(serviceParam));
+        setServiceData(parsedService);
+        
+        // Create payment intent
+        fetch('/api/create-payment-intent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount: parseFloat(parsedService.price.replace(/[$,]/g, '')) * 100, // Convert to cents
+            currency: 'cad',
+            metadata: {
+              serviceName: parsedService.name,
+              serviceCategory: parsedService.category,
+              description: parsedService.description
+            }
+          }),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.clientSecret) {
+            setClientSecret(data.clientSecret);
+          } else if (data.error) {
+            setError(data.error);
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating payment intent:', error);
+          setError('Failed to initialize payment. Please check your Stripe configuration.');
+        });
+      } catch (error) {
+        console.error('Error parsing service data:', error);
+        setError('Invalid service data provided.');
+      }
     }
   }, [location]);
-
-  if (!stripePromise) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <div className="text-yellow-600 mb-4">
-              <CreditCard className="h-12 w-12 mx-auto mb-2" />
-              <h2 className="text-xl font-semibold">Payment System Not Configured</h2>
-              <p className="text-gray-600 mt-2">
-                Stripe payment system is not configured. Please contact support.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
   }
 
   if (!clientSecret || clientSecret === 'missing') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <div className="text-red-600 mb-4">
               <CreditCard className="h-12 w-12 mx-auto mb-2" />
