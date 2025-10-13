@@ -50,6 +50,7 @@ const applicationSchema = z.object({
   phone: z.string().min(10, "Valid phone number is required"),
   position: z.string().min(1, "Please select a position"),
   experience: z.string().min(1, "Please describe your experience"),
+  availability: z.string().min(1, "Please select your availability"),
   coverLetter: z.string().optional(),
   resume: z.any().optional(),
 });
@@ -86,6 +87,7 @@ const Careers = () => {
       phone: "",
       position: "",
       experience: "",
+      availability: "Full-time",
       coverLetter: "",
     },
   });
@@ -100,6 +102,7 @@ const Careers = () => {
         phone: data.phone,
         position: data.position,
         experience: data.experience,
+        availability: data.availability || "Full-time", // Default to Full-time if not specified
         coverLetter: data.coverLetter
       };
 
@@ -547,6 +550,30 @@ const Careers = () => {
                             placeholder="Describe your relevant work experience, certifications, and skills..."
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="availability"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Availability *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select your availability" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Full-time">Full-time</SelectItem>
+                            <SelectItem value="Part-time">Part-time</SelectItem>
+                            <SelectItem value="Contract">Contract</SelectItem>
+                            <SelectItem value="Flexible">Flexible</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
