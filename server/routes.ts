@@ -522,6 +522,48 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  // Update user roles and access levels
+  app.patch("/api/admin/users/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const userId = parseInt(req.params.id);
+      const updates = req.body;
+      const { sqlite } = await import('./db');
+
+      // Build dynamic update query based on provided fields
+      const allowedFields = ['role', 'is_admin', 'has_pro_access', 'has_pro'];
+      const updateFields = [];
+      const values = [];
+
+      for (const [key, value] of Object.entries(updates)) {
+        if (allowedFields.includes(key)) {
+          updateFields.push(`${key} = ?`);
+          values.push(value);
+        }
+      }
+
+      if (updateFields.length === 0) {
+        return res.status(400).json({ error: "No valid fields to update" });
+      }
+
+      values.push(userId);
+      const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
+      
+      sqlite.prepare(query).run(...values);
+      
+      // Return updated user
+      const updatedUser = sqlite.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Update user error:", error);
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+
   // Job Applications endpoints
   app.post("/api/job-applications", async (req: Request, res: Response) => {
     try {
