@@ -353,7 +353,7 @@ const AdminPanel = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-white/5 backdrop-blur-sm border border-white/10 p-1 rounded-xl">
+          <TabsList className="grid w-full grid-cols-8 bg-white/5 backdrop-blur-sm border border-white/10 p-1 rounded-xl">
             <TabsTrigger 
               value="applications" 
               className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 text-blue-200 rounded-lg transition-all duration-300"
@@ -393,6 +393,22 @@ const AdminPanel = () => {
             >
               <MessageSquare className="h-4 w-4" />
               <span className="hidden sm:inline">Contact Forms</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="blog" 
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 text-blue-200 rounded-lg transition-all duration-300"
+              data-testid="tab-blog"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Blog Management</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="team" 
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 text-blue-200 rounded-lg transition-all duration-300"
+              data-testid="tab-team"
+            >
+              <UserCheck className="h-4 w-4" />
+              <span className="hidden sm:inline">Team Management</span>
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
@@ -1045,6 +1061,88 @@ const AdminPanel = () => {
                       </Card>
                     ))
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Blog Management Tab */}
+          <TabsContent value="blog" className="space-y-6" data-testid="tabcontent-blog">
+            <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white font-black text-2xl">
+                  <FileText className="h-6 w-6 text-amber-400" />
+                  Blog Management
+                </CardTitle>
+                <CardDescription className="text-blue-200">
+                  Create, edit, and manage blog posts for SEO and content marketing
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-white">Blog Posts</h3>
+                  <Button 
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                    onClick={() => {
+                      // This would open a blog creation modal
+                      alert("Blog creation functionality will be implemented here");
+                    }}
+                  >
+                    Create New Post
+                  </Button>
+                </div>
+                
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+                  <div className="text-center text-white/70 py-8">
+                    <FileText className="h-12 w-12 mx-auto mb-4 text-white/50" />
+                    <h4 className="text-lg font-semibold mb-2">Blog Management Coming Soon</h4>
+                    <p className="text-sm">
+                      Full blog creation and management functionality will be available here.
+                      <br />
+                      Create posts, manage categories, and optimize for SEO.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Team Management Tab */}
+          <TabsContent value="team" className="space-y-6" data-testid="tabcontent-team">
+            <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white font-black text-2xl">
+                  <UserCheck className="h-6 w-6 text-amber-400" />
+                  Team Management
+                </CardTitle>
+                <CardDescription className="text-blue-200">
+                  Manage team members displayed on the About page
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-white">Team Members</h3>
+                  <Button 
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                    onClick={() => {
+                      // This would open a team member creation modal
+                      alert("Team member management functionality will be implemented here");
+                    }}
+                  >
+                    Add Team Member
+                  </Button>
+                </div>
+                
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+                  <div className="text-center text-white/70 py-8">
+                    <UserCheck className="h-12 w-12 mx-auto mb-4 text-white/50" />
+                    <h4 className="text-lg font-semibold mb-2">Team Management Coming Soon</h4>
+                    <p className="text-sm">
+                      Add, edit, and manage team members that appear on the About page.
+                      <br />
+                      Include photos, roles, experience, and specialties.
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
