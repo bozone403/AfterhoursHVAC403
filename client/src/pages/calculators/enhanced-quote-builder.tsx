@@ -953,7 +953,7 @@ Thank you for choosing AfterHours HVAC for your project needs.`;
         createdAt: new Date().toISOString()
       };
       
-      const response = await fetch('/api/quotes', {
+      const response = await apiFetch('/api/quotes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

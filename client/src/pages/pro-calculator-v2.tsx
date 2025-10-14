@@ -291,7 +291,7 @@ const ProCalculatorV2 = () => {
         createdAt: new Date().toISOString()
       };
 
-      const response = await fetch('/api/estimates', {
+      const response = await apiFetch('/api/estimates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(estimateData)
@@ -325,7 +325,7 @@ const ProCalculatorV2 = () => {
         calculations
       };
 
-      const response = await fetch('/api/generate-pdf', {
+      const response = await apiFetch('/api/generate-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(estimateData)
