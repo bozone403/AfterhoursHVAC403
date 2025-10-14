@@ -49,7 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ["/api/user"],
     queryFn: async () => {
       try {
-        const res = await fetch("/api/user", {
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://afterhourshvac403.onrender.com';
+        const res = await fetch(`${API_BASE_URL}/api/user`, {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -81,7 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await fetch("/api/login", {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://afterhourshvac403.onrender.com';
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Register mutation
   const registerMutation = useMutation({
     mutationFn: async (userData: RegisterData) => {
-      const res = await fetch("/api/register", {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://afterhourshvac403.onrender.com';
+      const res = await fetch(`${API_BASE_URL}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,13 +148,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: error.message,
         variant: "destructive",
       });
-    },
   });
 
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/logout", {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://afterhourshvac403.onrender.com';
+      const res = await fetch(`${API_BASE_URL}/api/logout`, {
         method: "POST",
         credentials: 'include', // Include cookies for session management
       });
