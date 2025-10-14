@@ -148,6 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: error.message,
         variant: "destructive",
       });
+    },
   });
 
   // Logout mutation
