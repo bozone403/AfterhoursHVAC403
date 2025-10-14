@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { useEffect, useState } from 'react';
+import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { apiFetch } from '@/lib/api';
 import { useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, PaymentIntent } from '@stripe/stripe-js';
 
@@ -39,7 +40,7 @@ const PaymentConfirmation = () => {
         // Update user access in the database (using mock user ID for demo)
         try {
           const mockUserId = 1; // In a real app, this would be the authenticated user's ID
-          const response = await fetch(`/api/update-pro-access?userId=${mockUserId}`, {
+          const response = await apiFetch(`/api/update-pro-access?userId=${mockUserId}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ const PaymentConfirmation = () => {
             // Update user access in the database (using mock user ID for demo)
             try {
               const mockUserId = 1; // In a real app, this would be the authenticated user's ID
-              const response = await fetch(`/api/update-pro-access?userId=${mockUserId}`, {
+              const response = await apiFetch(`/api/update-pro-access?userId=${mockUserId}`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

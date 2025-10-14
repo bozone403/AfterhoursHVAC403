@@ -1,13 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from "@/lib/api";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { 
@@ -179,7 +179,7 @@ const SubscriptionPaymentForm = ({ planId, onSuccess }: { planId: string; onSucc
         };
         
         try {
-          await fetch('/api/webhook', {
+          await apiFetch('/api/webhook', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(webhookPayload)

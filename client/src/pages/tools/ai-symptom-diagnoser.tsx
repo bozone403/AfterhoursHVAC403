@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Bot, MessageSquare, AlertTriangle, CheckCircle, Wrench, Phone, ArrowRight, Lightbulb, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from "@/lib/api";
 import StepByStepGuide from "@/components/StepByStepGuide";
 import SafetyAlertSystem, { createGasLeakAlert, createElectricalAlert, createFilterAlert } from "@/components/SafetyAlertSystem";
 import ToolMascot from "@/components/ToolMascot";
@@ -576,7 +577,7 @@ export default function AISymptomDiagnoser() {
     try {
       // Call Earl AI API for real HVAC expertise
       const [chatResponse, analysisResponse] = await Promise.all([
-        fetch('/api/earl/chat', {
+        apiFetch('/api/earl/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -586,7 +587,7 @@ export default function AISymptomDiagnoser() {
             isProLevel: false
           }),
         }),
-        fetch('/api/earl/analyze-symptoms', {
+        apiFetch('/api/earl/analyze-symptoms', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

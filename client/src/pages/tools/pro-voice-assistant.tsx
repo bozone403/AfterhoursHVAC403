@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -234,7 +235,7 @@ const ProVoiceAssistant = () => {
     
     try {
       // Call Earl AI API for real HVAC expertise
-      const response = await fetch('/api/earl/chat', {
+      const response = await apiFetch('/api/earl/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
