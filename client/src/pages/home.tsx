@@ -309,8 +309,8 @@ const Home = () => {
           </div>
         </section>
 
-        {/* AI Tools Section */}
-        <section className="hvac-section bg-gradient-to-br from-blue-900 via-slate-900 to-blue-900">
+        {/* AI Tools Section - Updated */}
+        <section className="hvac-section bg-gradient-to-br from-blue-900 via-slate-900 to-blue-900" id="ai-tools">
           <div className="hvac-container">
             <div className="text-center mb-16">
               <div className="inline-flex items-center bg-amber-500/20 border border-amber-500/50 rounded-full px-6 py-2 mb-6">
