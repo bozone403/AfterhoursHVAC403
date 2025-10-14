@@ -3,18 +3,17 @@ import { Helmet } from 'react-helmet-async';
 import { ProAccessGuard } from '@/components/pro-access-guard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from "@/lib/api";
 import { Calculator, Home, Wrench, DollarSign, FileText, Plus, Minus, Search, Download, Save, CreditCard, Trash2 } from 'lucide-react';
 import { algginCatalog, categories, subcategories, searchCatalog, type CatalogItem } from '@shared/alggin-catalog';
 import { Elements, useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-
 interface MaterialItem {
   id: string;
   catalogItem: CatalogItem;
@@ -360,7 +359,7 @@ const ProCalculatorV2 = () => {
   // Create Stripe payment intent
   const createPaymentIntent = async () => {
     try {
-      const response = await fetch('/api/create-payment-intent', {
+      const response = await apiFetch('/api/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

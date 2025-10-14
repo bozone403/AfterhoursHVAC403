@@ -11,6 +11,7 @@ import { FileCheck, DollarSign, Calculator, Download, Plus, Trash2, Search, Pack
 import { ProAccessGuard } from "@/components/ProAccessGuard";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { apiFetch } from "@/lib/api";
 
 interface QuoteItem {
   id: string;
@@ -980,7 +981,7 @@ Thank you for choosing AfterHours HVAC for your project needs.`;
         ? parseFloat(depositAmount) 
         : quote.total;
       
-      const response = await fetch('/api/create-payment-intent', {
+      const response = await apiFetch('/api/create-payment-intent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
