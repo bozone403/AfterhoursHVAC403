@@ -22,3 +22,7 @@ services:
         sync: false
       - key: CORS_ORIGIN
         value: https://afterhourshvac.ca
+      - key: VITE_API_BASE_URL
+        value: https://afterhourshvac403.onrender.com
+      - key: VITE_STRIPE_PUBLIC_KEY
+        sync: false
