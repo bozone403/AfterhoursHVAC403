@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { apiFetch } from "@/lib/api";
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -215,7 +216,7 @@ export default function PricingCards() {
 
   const handleBuyNow = (service: string, amount: number, description: string) => {
     // Check if user is authenticated first
-    fetch('/api/user')
+    apiFetch('/api/user')
       .then(res => {
         if (res.status === 401) {
           // User not authenticated, redirect to login with return URL

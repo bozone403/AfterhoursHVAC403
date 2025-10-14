@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { apiFetch } from "@/lib/api";
 import { Helmet } from "react-helmet-async";
 import { 
   MessageSquare, 
@@ -75,18 +76,18 @@ export default function ForumInteractive() {
   const { data: topics = [], isLoading: topicsLoading } = useQuery<ExtendedForumTopic[]>({
     queryKey: ["/api/forum/topics", selectedCategory],
     queryFn: async () => {
-      const response = await fetch(`/api/forum/categories/${selectedCategory}/topics`);
+      const response = await apiFetch(`/api/forum/categories/${selectedCategory}/topics`);
       if (!response.ok) throw new Error("Failed to fetch topics");
       const topics = await response.json();
       
       const enhancedTopics = await Promise.all(topics.map(async (topic: any) => {
         try {
-          const likeResponse = await fetch(`/api/forum/likes/count?topicId=${topic.id}`);
+          const likeResponse = await apiFetch(`/api/forum/likes/count?topicId=${topic.id}`);
           const { count } = likeResponse.ok ? await likeResponse.json() : { count: 0 };
           
           let hasLiked = false;
           if (user) {
-            const userLikeResponse = await fetch(`/api/forum/likes/check?topicId=${topic.id}`);
+            const userLikeResponse = await apiFetch(`/api/forum/likes/check?topicId=${topic.id}`);
             if (userLikeResponse.ok) {
               const { hasLiked: liked } = await userLikeResponse.json();
               hasLiked = liked;
@@ -122,18 +123,18 @@ export default function ForumInteractive() {
     queryFn: async () => {
       if (!selectedTopic) return [];
       
-      const response = await fetch(`/api/forum/topics/${selectedTopic}/posts`);
+      const response = await apiFetch(`/api/forum/topics/${selectedTopic}/posts`);
       if (!response.ok) throw new Error("Failed to fetch posts");
       const posts = await response.json();
       
       const enhancedPosts = await Promise.all(posts.map(async (post: any) => {
         try {
-          const likeResponse = await fetch(`/api/forum/likes/count?postId=${post.id}`);
+          const likeResponse = await apiFetch(`/api/forum/likes/count?postId=${post.id}`);
           const { count } = likeResponse.ok ? await likeResponse.json() : { count: 0 };
           
           let hasLiked = false;
           if (user) {
-            const userLikeResponse = await fetch(`/api/forum/likes/check?postId=${post.id}`);
+            const userLikeResponse = await apiFetch(`/api/forum/likes/check?postId=${post.id}`);
             if (userLikeResponse.ok) {
               const { hasLiked: liked } = await userLikeResponse.json();
               hasLiked = liked;

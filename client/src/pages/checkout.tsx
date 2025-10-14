@@ -5,6 +5,7 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, CheckCircle } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -99,7 +100,7 @@ const Checkout = () => {
         setServiceData(parsedService);
         
         // Create payment intent
-        fetch('/api/create-payment-intent', {
+        apiFetch('/api/create-payment-intent', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
