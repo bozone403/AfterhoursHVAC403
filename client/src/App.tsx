@@ -15,8 +15,6 @@ import EmergencyBanner from "@/components/layout/EmergencyBanner";
 import WelcomeModal from "@/components/modals/WelcomeModal";
 
 // Pages
-import Home from "@/pages/home";
-import HomeV2 from "@/pages/home-v2";
 import HomeLuxury from "@/pages/home-luxury";
 import About from "@/pages/about";
 
@@ -37,7 +35,6 @@ import EnhancedQuoteBuilder from "@/pages/calculators/enhanced-quote-builder";
 import ServiceTracking from "@/pages/service-tracking";
 import EmergencyTracker from "@/pages/emergency-tracker";
 import EmergencyService from "@/pages/emergency-service";
-import ProCalculator from "@/pages/pro-calculator";
 import ProCalculatorV2 from "@/pages/pro-calculator-v2";
 import ProPortal from "@/pages/pro-portal";
 import MembershipSimple from "@/pages/membership-simple";

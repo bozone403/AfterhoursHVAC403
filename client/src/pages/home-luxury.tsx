@@ -16,7 +16,11 @@ import {
   Wind,
   Clock,
   Users,
-  TrendingUp
+  TrendingUp,
+  Brain,
+  Calculator,
+  Wrench,
+  Zap
 } from 'lucide-react';
 
 const HomeLuxury = () => {
@@ -176,6 +180,74 @@ const HomeLuxury = () => {
               color="from-emerald-500 to-teal-500"
               link="/services/maintenance"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* AI Tools Section */}
+      <section className="py-24 bg-gradient-to-br from-blue-900 via-slate-900 to-blue-900" id="ai-tools">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-amber-500/20 border border-amber-500/50 rounded-full px-6 py-2 mb-6">
+              <Zap className="w-5 h-5 text-amber-400 mr-2" />
+              <span className="text-amber-300 font-semibold">AI-Powered Tools</span>
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-black text-white mb-6">
+              Smart HVAC <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Diagnostics</span>
+            </h2>
+            <p className="text-xl text-blue-200 max-w-3xl mx-auto">
+              Get instant professional diagnostics and calculations with our AI-powered tools. Save time and money with accurate problem identification.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Link href="/tools/ai-symptom-diagnoser">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 group cursor-pointer hover:-translate-y-2">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">AI Symptom Diagnoser</h3>
+                <p className="text-blue-200 mb-6">
+                  Describe your HVAC problem and get instant AI-powered diagnosis with repair recommendations.
+                </p>
+                <div className="flex items-center text-amber-400 font-semibold group-hover:gap-2 transition-all">
+                  <span>Try AI Diagnosis</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/tools/alberta-rebate-calculator">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 group cursor-pointer hover:-translate-y-2">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Calculator className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Alberta Rebate Calculator</h3>
+                <p className="text-blue-200 mb-6">
+                  Calculate available government rebates for energy-efficient HVAC upgrades in Alberta.
+                </p>
+                <div className="flex items-center text-amber-400 font-semibold group-hover:gap-2 transition-all">
+                  <span>Check Rebates</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/pro-calculator">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 group cursor-pointer hover:-translate-y-2 md:col-span-2 lg:col-span-1">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Wrench className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Pro Calculator</h3>
+                <p className="text-blue-200 mb-6">
+                  Professional material estimation with real-time pricing for contractors and homeowners.
+                </p>
+                <div className="flex items-center text-amber-400 font-semibold group-hover:gap-2 transition-all">
+                  <span>Access Pro Tools</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </section>

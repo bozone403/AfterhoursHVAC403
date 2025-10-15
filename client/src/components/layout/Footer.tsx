@@ -250,10 +250,10 @@ const Footer = () => {
             </div>
             
             <div className="flex flex-wrap items-center space-x-6 text-sm">
-              <Link href="/privacy" className="text-blue-300 hover:text-amber-400 transition-colors">
+              <Link href="/privacy-policy" className="text-blue-300 hover:text-amber-400 transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-blue-300 hover:text-amber-400 transition-colors">
+              <Link href="/terms-of-service" className="text-blue-300 hover:text-amber-400 transition-colors">
                 Terms of Service
               </Link>
               <Link href="/sitemap" className="text-blue-300 hover:text-amber-400 transition-colors">
