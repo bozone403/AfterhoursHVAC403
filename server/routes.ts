@@ -478,16 +478,33 @@ export function registerRoutes(app: Express): void {
     });
   });
 
-  app.post("/api/admin/contacts", async (req: Request, res: Response) => {
+  // Public contact form submission
+  const handleContactSubmission = async (req: Request, res: Response) => {
     try {
-      const contactData = contactSchema.parse(req.body);
-      const submission = await storage.createContactSubmission(contactData);
-      res.json(submission);
+      const contactData = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO contact_submissions (
+          name, email, phone, subject, message, created_at, status
+        ) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'new')
+      `).run(
+        contactData.name || '',
+        contactData.email || '',
+        contactData.phone || '',
+        contactData.subject || 'General Inquiry',
+        contactData.message || ''
+      );
+
+      res.json({ id: result.lastInsertRowid, message: "Contact form submitted successfully" });
     } catch (error) {
       console.error("Contact submission error:", error);
       res.status(500).json({ error: "Failed to submit contact form" });
     }
-  });
+  };
+
+  app.post("/api/contacts", handleContactSubmission); // Public endpoint
+  app.post("/api/admin/contacts", handleContactSubmission); // Keep old route for compatibility
 
   app.get("/api/admin/contacts", async (req: Request, res: Response) => {
     try {
