@@ -6,9 +6,22 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Droplets, Star, Award, Shield, Zap, CheckCircle, ArrowRight, ShoppingCart, Clock, Sparkles, Phone } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const WaterHeatersShop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (heater: any) => {
+    setSelectedService({
+      name: heater.name,
+      price: heater.price,
+      description: `${heater.capacity} gallon water heater - ${heater.type}`,
+      category: 'Water Heater'
+    });
+    setBookingModalOpen(true);
+  };
 
   const waterHeaterModels = [
     {

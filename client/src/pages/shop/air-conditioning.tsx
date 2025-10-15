@@ -6,9 +6,22 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Snowflake, Star, Award, Shield, Zap, CheckCircle, ArrowRight, ShoppingCart, Thermometer, Sparkles, Phone } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const AirConditioningShop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (ac: any) => {
+    setSelectedService({
+      name: ac.name,
+      price: ac.price,
+      description: `${ac.seer} SEER air conditioning unit - ${ac.type}`,
+      category: 'Air Conditioning'
+    });
+    setBookingModalOpen(true);
+  };
 
   const acModels = [
     {

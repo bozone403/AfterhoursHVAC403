@@ -3,8 +3,9 @@ import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Wind, Wrench, Fan, Thermometer, Shield, Zap, Home, Factory, Phone, CheckCircle, Star, Clock, DollarSign, ArrowRight, Award, Sparkles } from 'lucide-react';
+import { Wind, Wrench, Fan, Thermometer, Shield, Zap, Home, Factory, Phone, CheckCircle, Star, Clock, DollarSign, ArrowRight, Award, Sparkles, ShoppingCart } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 interface AddOnItem {
   id: string;
@@ -260,8 +261,20 @@ const categories = [
   { id: "electrical", name: "Electrical", icon: Zap }
 ];
 
-const AddOnsExtrasPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+const AddonsExtrasShop = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (item: AddOnItem) => {
+    setSelectedService({
+      name: item.name,
+      price: item.price,
+      description: item.description,
+      category: 'HVAC Add-On'
+    });
+    setBookingModalOpen(true);
+  };
 
   const filteredItems = selectedCategory === "all" 
     ? addOnItems 
@@ -574,4 +587,4 @@ const AddOnsExtrasPage = () => {
   );
 };
 
-export default AddOnsExtrasPage;
+export default AddonsExtrasShop;

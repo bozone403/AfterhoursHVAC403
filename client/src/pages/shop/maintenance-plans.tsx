@@ -4,11 +4,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Shield, Clock, Wrench, CheckCircle, Star, Phone, Calendar, ArrowRight, Award, Sparkles, Zap } from 'lucide-react';
+import { Settings, Shield, Clock, Wrench, CheckCircle, Star, Phone, Calendar, ArrowRight, Award, Sparkles, Zap, ShoppingCart } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const MaintenancePlansShop = () => {
   const [isAnnual, setIsAnnual] = useState(true);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (plan: any) => {
+    setSelectedService({
+      name: plan.name,
+      price: plan.price,
+      description: plan.description,
+      category: 'Maintenance Plan'
+    });
+    setBookingModalOpen(true);
+  };
 
   const residentialPlans = [
     {
