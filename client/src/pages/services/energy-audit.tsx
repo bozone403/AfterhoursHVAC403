@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +16,25 @@ import {
   Thermometer,
   DollarSign,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  ShoppingCart
 } from "lucide-react";
 import { Link } from "wouter";
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 export default function EnergyAudit() {
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (service: any) => {
+    setSelectedService({
+      name: service.name,
+      price: service.price,
+      description: service.description,
+      category: 'Energy Audit'
+    });
+    setBookingModalOpen(true);
+  };
   const auditServices = [
     {
       name: "Residential Energy Audit",
@@ -251,30 +266,19 @@ export default function EnergyAudit() {
                   
                   <div className="space-y-3">
                     <Button 
-                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
-                      onClick={() => {
-                        const serviceData = {
-                          name: service.name,
-                          price: service.price,
-                          description: service.description,
-                          category: 'energy-audit'
-                        };
-                        window.location.href = `/checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
-                      }}
+                      className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
+                      onClick={() => handleBookService(service)}
                     >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
                       Book Now - {service.price}
                     </Button>
                     <Button 
-                      className={`w-full ${
-                        service.popular 
-                          ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700' 
-                          : 'bg-slate-900 hover:bg-slate-800'
-                      } text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105`}
+                      variant="outline"
+                      className="w-full border-2 border-gray-300 hover:bg-gray-50"
                       asChild
-                      data-testid={`button-schedule-audit-${index}`}
                     >
-                      <Link href="/quote">
-                        Get Custom Quote
+                      <Link href="/contact">
+                        Learn More
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>
@@ -422,6 +426,15 @@ export default function EnergyAudit() {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 }
