@@ -530,34 +530,34 @@ const ProCalculatorV2 = () => {
                 <CardContent className="space-y-4">
                   <div>
                     <Label htmlFor="laborRate" className="text-white">Labor Rate ($/hour)</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Input
                       id="laborRate"
                       type="number"
                       value={laborRate}
                       onChange={(e) => setLaborRate(e.target.value)}
-                      className="mt-1 bg-gray-700 border-gray-600 text-white"
+                      className="mt-1 bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
                     />
                   </div>
                   
                   <div>
                     <Label htmlFor="overhead" className="text-white">Overhead (%)</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Input
                       id="overhead"
                       type="number"
                       value={overheadPercentage}
                       onChange={(e) => setOverheadPercentage(e.target.value)}
-                      className="mt-1 bg-gray-700 border-gray-600 text-white"
+                      className="mt-1 bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
                     />
                   </div>
                   
                   <div>
                     <Label htmlFor="markup" className="text-white">Markup (%)</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Input
                       id="markup"
                       type="number"
                       value={markupPercentage}
                       onChange={(e) => setMarkupPercentage(e.target.value)}
-                      className="mt-1 bg-gray-700 border-gray-600 text-white"
+                      className="mt-1 bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
                     />
                   </div>
                 </CardContent>
@@ -580,12 +580,12 @@ const ProCalculatorV2 = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div>
                       <Label htmlFor="search" className="text-white">Search Materials</Label>
-                      <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                      <Input
                         id="search"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="mt-1 bg-gray-700 border-gray-600 text-white"
                         placeholder="Search pipe, fittings, etc..."
+                        className="mt-1 bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
                       />
                     </div>
                     
@@ -677,13 +677,13 @@ const ProCalculatorV2 = () => {
                               <div className="text-sm text-gray-300">{item.catalogItem.stockNumber}</div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                              <Input
                                 type="number"
                                 value={item.quantity}
                                 onChange={(e) => updateMaterialQuantity(item.id, parseFloat(e.target.value) || 0)}
-                                className="w-20 bg-gray-600 border-gray-500 text-white text-center"
                                 min="0"
                                 step="0.1"
+                                className="w-20 bg-white/5 backdrop-blur-sm border-white/20 text-white text-center placeholder:text-white/40 focus:border-amber-500"
                               />
                               <span className="text-gray-300 w-12">x ${item.catalogItem.price}</span>
                               <span className="text-orange-500 font-bold w-20 text-right">
@@ -716,27 +716,27 @@ const ProCalculatorV2 = () => {
                       <div className="space-y-2">
                         {laborItems.map((item) => (
                           <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
-                            <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                            <Input
                               value={item.description}
                               onChange={(e) => updateLaborItem(item.id, { description: e.target.value })}
-                              className="flex-1 bg-gray-600 border-gray-500 text-white"
                               placeholder="Labor description"
+                              className="flex-1 bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
                             />
-                            <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                            <Input
                               type="number"
                               value={item.hours}
                               onChange={(e) => updateLaborItem(item.id, { hours: parseFloat(e.target.value) || 0 })}
-                              className="w-20 bg-gray-600 border-gray-500 text-white text-center"
                               placeholder="Hours"
                               step="0.25"
+                              className="w-20 bg-white/5 backdrop-blur-sm border-white/20 text-white text-center placeholder:text-white/40 focus:border-amber-500"
                             />
                             <span className="text-gray-300">hrs</span>
-                            <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                            <Input
                               type="number"
                               value={item.rate}
                               onChange={(e) => updateLaborItem(item.id, { rate: parseFloat(e.target.value) || 0 })}
-                              className="w-20 bg-gray-600 border-gray-500 text-white text-center"
                               placeholder="Rate"
+                              className="w-20 bg-white/5 backdrop-blur-sm border-white/20 text-white text-center placeholder:text-white/40 focus:border-amber-500"
                             />
                             <span className="text-orange-500 font-bold w-20 text-right">
                               ${item.totalCost.toFixed(2)}
@@ -767,27 +767,27 @@ const ProCalculatorV2 = () => {
                       <div className="space-y-2">
                         {customItems.map((item) => (
                           <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
-                            <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                            <Input
                               value={item.description}
                               onChange={(e) => updateCustomItem(item.id, { description: e.target.value })}
-                              className="flex-1 bg-gray-600 border-gray-500 text-white"
                               placeholder="Item description"
+                              className="flex-1 bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
                             />
-                            <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                            <Input
                               type="number"
                               value={item.quantity}
                               onChange={(e) => updateCustomItem(item.id, { quantity: parseFloat(e.target.value) || 0 })}
-                              className="w-20 bg-gray-600 border-gray-500 text-white text-center"
                               placeholder="Qty"
                               step="0.1"
+                              className="w-20 bg-white/5 backdrop-blur-sm border-white/20 text-white text-center placeholder:text-white/40 focus:border-amber-500"
                             />
-                            <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                            <Input
                               type="number"
                               value={item.price}
                               onChange={(e) => updateCustomItem(item.id, { price: parseFloat(e.target.value) || 0 })}
-                              className="w-24 bg-gray-600 border-gray-500 text-white text-center"
                               placeholder="Price"
                               step="0.01"
+                              className="w-24 bg-white/5 backdrop-blur-sm border-white/20 text-white text-center placeholder:text-white/40 focus:border-amber-500"
                             />
                             <span className="text-orange-500 font-bold w-20 text-right">
                               ${item.totalPrice.toFixed(2)}
