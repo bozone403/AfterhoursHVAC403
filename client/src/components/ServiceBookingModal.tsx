@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { ShoppingCart, CheckCircle, Loader2 } from 'lucide-react';
+import { ShoppingCart, CheckCircle, Loader2, CreditCard } from 'lucide-react';
 
 const bookingSchema = z.object({
   customerName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -62,53 +62,62 @@ export function ServiceBookingModal({ isOpen, onClose, service }: ServiceBooking
     },
   });
 
-  const createBookingMutation = useMutation({
+  const createCheckoutMutation = useMutation({
     mutationFn: async (data: BookingFormData) => {
-      const bookingData = {
+      // Store customer info in sessionStorage for after payment
+      sessionStorage.setItem('pendingBooking', JSON.stringify({
         customerName: data.customerName,
         customerEmail: data.customerEmail,
         customerPhone: data.customerPhone,
-        serviceName: service.name,
-        servicePrice: typeof service.price === 'number' ? service.price.toString() : service.price,
-        serviceDescription: service.description || `${service.name} - Customer requested service booking`,
-        paymentStatus: 'pending',
-        status: 'confirmed',
         address: data.address || '',
         notes: data.notes || '',
-      };
-      
-      return await apiRequest('POST', '/api/bookings', bookingData);
-    },
-    onSuccess: () => {
-      setIsSuccess(true);
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/bookings'] });
-      toast({
-        title: 'Service Booked Successfully! 🎉',
-        description: `Your ${service.name} booking has been confirmed. We'll contact you shortly!`,
+        serviceName: service.name,
+        serviceDescription: service.description || `${service.name} - Customer service booking`,
+      }));
+
+      // Extract numeric price from string like "$149" or "Starting at $6,499"
+      let numericPrice = 0;
+      if (typeof service.price === 'number') {
+        numericPrice = service.price;
+      } else {
+        const priceMatch = service.price.match(/\$?([\d,]+)/);
+        if (priceMatch) {
+          numericPrice = parseFloat(priceMatch[1].replace(/,/g, ''));
+        }
+      }
+
+      // Create Stripe checkout session
+      const response = await apiRequest('POST', '/api/create-checkout-session', {
+        serviceName: service.name,
+        price: numericPrice,
+        description: service.description || `${service.name} service`,
+        category: service.category || 'service',
+        customerEmail: data.customerEmail,
       });
       
-      // Reset after 2 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-        form.reset();
-        onClose();
-      }, 2000);
+      return response;
+    },
+    onSuccess: (data: any) => {
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
     },
     onError: (error: any) => {
       toast({
-        title: 'Booking Failed',
-        description: error.message || 'Failed to create booking. Please try again.',
+        title: 'Checkout Failed',
+        description: error.message || 'Failed to start payment process. Please try again.',
         variant: 'destructive',
       });
     },
   });
 
   const onSubmit = (data: BookingFormData) => {
-    createBookingMutation.mutate(data);
+    createCheckoutMutation.mutate(data);
   };
 
   const handleClose = () => {
-    if (!createBookingMutation.isPending) {
+    if (!createCheckoutMutation.isPending) {
       form.reset();
       setIsSuccess(false);
       onClose();
@@ -228,23 +237,26 @@ export function ServiceBookingModal({ isOpen, onClose, service }: ServiceBooking
                     type="button"
                     variant="outline"
                     onClick={handleClose}
-                    disabled={createBookingMutation.isPending}
+                    disabled={createCheckoutMutation.isPending}
                     className="flex-1"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    disabled={createBookingMutation.isPending}
+                    disabled={createCheckoutMutation.isPending}
                     className="flex-1 hvac-button-primary"
                   >
-                    {createBookingMutation.isPending ? (
+                    {createCheckoutMutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Booking...
+                        Redirecting to Payment...
                       </>
                     ) : (
-                      'Confirm Booking'
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        Proceed to Payment
+                      </>
                     )}
                   </Button>
                 </div>

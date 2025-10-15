@@ -1122,7 +1122,7 @@ export function registerRoutes(app: Express): void {
   // Stripe checkout session creation
   app.post("/api/create-checkout-session", async (req: Request, res: Response) => {
     try {
-      const { serviceName, price, description, category } = req.body;
+      const { serviceName, price, description, category, customerEmail } = req.body;
       
       if (!process.env.STRIPE_SECRET_KEY) {
         return res.status(500).json({ error: "Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables." });
@@ -1146,10 +1146,12 @@ export function registerRoutes(app: Express): void {
           quantity: 1,
         }],
         mode: 'payment',
-        success_url: `${req.headers.origin || 'http://localhost:5000'}/payment-confirmation?session_id={CHECKOUT_SESSION_ID}&service=${encodeURIComponent(serviceName)}`,
-        cancel_url: `${req.headers.origin || 'http://localhost:5000'}/services`,
+        customer_email: customerEmail,
+        success_url: `${req.headers.origin || 'http://localhost:5000'}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin || 'http://localhost:5000'}/`,
         metadata: {
           category: category || 'service',
+          serviceName: serviceName,
         }
       });
 

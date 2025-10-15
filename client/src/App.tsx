@@ -61,6 +61,7 @@ import Payment from "@/pages/payment";
 import StripeCheckout from "@/pages/stripe-checkout";
 import AdminPhotos from "@/pages/admin-photos-enhanced";
 import PaymentConfirmation from "@/pages/payment-confirmation";
+import PaymentSuccess from "@/pages/payment-success";
 import CalendarBooking from "@/pages/calendar-booking";
 import FurnacePage from "@/pages/products/furnace";
 import AuthPage from "@/pages/auth";
@@ -180,6 +181,7 @@ function Router() {
         <Route path="/payment/:productId" component={Payment} />
         <Route path="/stripe-checkout" component={StripeCheckout} />
         <Route path="/payment-confirmation" component={PaymentConfirmation} />
+        <Route path="/payment-success" component={PaymentSuccess} />
         <Route path="/calendar-booking" component={CalendarBooking} />
         <Route path="/service-callout" component={ServiceCalloutPayment} />
         
