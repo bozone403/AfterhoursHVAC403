@@ -145,7 +145,7 @@ export default function AdminDashboardEnhanced() {
 
   // Fetch team members
   const { data: teamMembers = [], isLoading: teamLoading, refetch: refetchTeam } = useQuery<TeamMember[]>({
-    queryKey: ["/api/admin/team"],
+    queryKey: ["/api/team"],
     enabled: true
   });
 
@@ -562,18 +562,12 @@ export default function AdminDashboardEnhanced() {
               <h1 className="hvac-heading-lg mb-4 bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                 Admin Dashboard
               </h1>
-              <p className="hvac-text-lg text-gray-600">Comprehensive user and system management for HVAC professionals</p>
+              <p className="hvac-text-lg text-gray-600">Comprehensive system management for AfterHours HVAC</p>
             </div>
             <div className="flex gap-2">
-              <Button asChild variant="outline">
-                <Link href="/admin/team">
-                  <UsersRound className="h-4 w-4 mr-2" />
-                  Manage Team
-                </Link>
-              </Button>
               <Button onClick={() => refetchUsers()} className="hvac-button-primary">
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
+                Refresh All
               </Button>
             </div>
           </div>
@@ -898,65 +892,53 @@ export default function AdminDashboardEnhanced() {
           </div>
         </TabsContent>
 
-        {/* Team Members Tab */}
+        {/* Team Members Tab - Redirect to dedicated page */}
         <TabsContent value="team" className="space-y-4">
           <div className="hvac-card">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="hvac-heading-md mb-2">Team Members Management</h2>
-                <p className="hvac-text-base text-gray-600">Manage your team members displayed on the About page</p>
-              </div>
-            </div>
-
-            {teamLoading ? (
-              <div className="text-center py-8">
-                <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600 mb-2" />
-                <p className="text-gray-600">Loading team members...</p>
-              </div>
-            ) : teamMembers && teamMembers.length > 0 ? (
-              <div className="space-y-4">
-                {teamMembers.map((member) => (
-                  <div key={member.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex gap-4">
-                        {member.imageUrl && (
-                          <img 
-                            src={member.imageUrl} 
-                            alt={member.name}
-                            className="w-16 h-16 rounded-full object-cover"
-                          />
-                        )}
-                        <div>
-                          <h3 className="font-bold text-lg text-gray-900">{member.name}</h3>
-                          <p className="text-blue-600 font-medium">{member.title}</p>
-                          <p className="text-sm text-gray-600 mt-2">{member.bio}</p>
-                          <div className="flex gap-2 mt-2">
-                            <Badge variant={member.active ? "default" : "secondary"}>
-                              {member.active ? "Active" : "Inactive"}
-                            </Badge>
-                            <Badge variant="outline">Order: {member.displayOrder}</Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="destructive" size="sm">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <UsersRound className="w-20 h-20 text-blue-600 mb-6" />
+              <h2 className="text-3xl font-black text-gray-900 mb-4">Team Management</h2>
+              <p className="text-lg text-gray-600 mb-8 max-w-2xl">
+                Full team member management (add, edit, delete, reorder) is available on the dedicated Team Management page.
+              </p>
+              
+              {teamLoading ? (
+                <div className="flex items-center gap-2 text-gray-600">
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  <span>Loading team stats...</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-6 mb-8">
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <div className="text-3xl font-bold text-blue-600">{teamMembers.length}</div>
+                    <div className="text-sm text-gray-600">Team Members</div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">No team members found</p>
-                <p className="text-sm text-gray-500">Add team members via the API endpoint /api/admin/team</p>
-              </div>
-            )}
+                  <div className="bg-green-50 rounded-xl p-4">
+                    <div className="text-3xl font-bold text-green-600">
+                      {Array.from(new Set(teamMembers.map((m: any) => m.department || 'General'))).length}
+                    </div>
+                    <div className="text-sm text-gray-600">Departments</div>
+                  </div>
+                  <div className="bg-orange-50 rounded-xl p-4">
+                    <div className="text-3xl font-bold text-orange-600">
+                      {teamMembers.filter((m: any) => m.isActive).length}
+                    </div>
+                    <div className="text-sm text-gray-600">Active</div>
+                  </div>
+                </div>
+              )}
+
+              <Button asChild size="lg" className="hvac-button-primary text-lg px-8 py-6">
+                <Link href="/admin/team">
+                  <UsersRound className="w-5 h-5 mr-2" />
+                  Go to Team Management
+                </Link>
+              </Button>
+              
+              <p className="text-sm text-gray-500 mt-4">
+                Manage Jordan, Derek, Earl and add new team members
+              </p>
+            </div>
           </div>
         </TabsContent>
 
@@ -1061,42 +1043,6 @@ export default function AdminDashboardEnhanced() {
                       </div>
                     </div>
                   ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Service Bookings Tab */}
-        <TabsContent value="bookings" className="space-y-4">
-          <div className="hvac-card">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="hvac-heading-md mb-2">Service Bookings</h2>
-                <p className="hvac-text-base text-gray-600">Manage customer service appointments and bookings</p>
-              </div>
-            </div>
-            <div>
-              {bookingsLoading ? (
-                <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {bookings && bookings.length > 0 ? (
-                    bookings.map((booking: any) => (
-                      <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div>
-                          <h4 className="font-semibold">{booking.customerName}</h4>
-                          <p className="text-sm text-muted-foreground">{booking.service} • {booking.date}</p>
-                          <p className="text-sm text-muted-foreground">{booking.address}</p>
-                        </div>
-                        <Badge>{booking.status}</Badge>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-center text-muted-foreground py-8">No service bookings found</p>
-                  )}
                 </div>
               )}
             </div>
