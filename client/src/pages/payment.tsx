@@ -14,7 +14,9 @@ import {
   CheckCircle, 
   CreditCard,
   Shield,
-  Loader2
+  Loader2,
+  Package,
+  AlertTriangle
 } from "lucide-react";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
@@ -176,6 +178,7 @@ const PaymentPage = () => {
   const [clientSecret, setClientSecret] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [paymentIntentCreated, setPaymentIntentCreated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const productId = params?.productId;
   const urlParams = new URLSearchParams(window.location.search);
@@ -209,13 +212,23 @@ const PaymentPage = () => {
           userId: user.id
         }
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            return res.json().then(err => { throw new Error(err.error || 'Payment setup failed'); });
+          }
+          return res.json();
+        })
         .then((data) => {
-          setClientSecret(data.clientSecret);
-          setIsLoading(false);
+          if (data.clientSecret) {
+            setClientSecret(data.clientSecret);
+            setIsLoading(false);
+          } else {
+            throw new Error('No client secret received');
+          }
         })
         .catch((error) => {
           console.error('Error creating payment intent:', error);
+          setError(error.message || 'Failed to initialize payment. Please try again.');
           setIsLoading(false);
           setPaymentIntentCreated(false);
         });
@@ -236,6 +249,32 @@ const PaymentPage = () => {
             <Button asChild>
               <Link href="/">Return Home</Link>
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="text-center p-8">
+            <AlertTriangle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Payment Setup Failed</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <div className="space-y-2">
+              <Button onClick={() => {
+                setError(null);
+                setIsLoading(true);
+                setPaymentIntentCreated(false);
+              }} className="w-full">
+                Try Again
+              </Button>
+              <Button variant="outline" asChild className="w-full">
+                <Link href="/">Return Home</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

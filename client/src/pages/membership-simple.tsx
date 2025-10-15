@@ -258,18 +258,29 @@ const MembershipSimple = () => {
   const subscribeMutation = useMutation({
     mutationFn: async (planId: string) => {
       const response = await apiRequest('POST', '/api/create-subscription', { planId });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create subscription');
+      }
       return response.json();
     },
     onSuccess: (data) => {
       if (data.clientSecret) {
         setClientSecret(data.clientSecret);
         setShowPaymentForm(true);
+      } else {
+        toast({
+          title: "Configuration Error",
+          description: "Payment system is not properly configured. Please contact support.",
+          variant: "destructive"
+        });
       }
     },
     onError: (error: any) => {
+      console.error('Subscription error:', error);
       toast({
         title: "Subscription Error",
-        description: error.message || "Failed to create subscription. Please try again.",
+        description: error.message || "Failed to create subscription. Please try again or contact support.",
         variant: "destructive"
       });
     }

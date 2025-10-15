@@ -756,9 +756,9 @@ export function registerRoutes(app: Express): void {
   });
 
   // Emergency Requests endpoints
-  app.post("/api/emergency-requests", async (req: Request, res: Response) => {
+  const handleEmergencyRequest = async (req: Request, res: Response) => {
     try {
-      const requestData = emergencyRequestSchema.parse(req.body);
+      const requestData = req.body;
       const { sqlite } = await import('./db');
       
       const result = sqlite.prepare(`
@@ -767,12 +767,12 @@ export function registerRoutes(app: Express): void {
           urgency, created_at, status
         ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'new')
       `).run(
-        requestData.name,
-        requestData.email,
-        requestData.phone,
-        requestData.address,
-        requestData.description,
-        requestData.urgency
+        requestData.name || '',
+        requestData.email || '',
+        requestData.phone || '',
+        requestData.address || '',
+        requestData.description || requestData.emergencyType || '',
+        requestData.urgency || 'high'
       );
 
       res.json({ id: result.lastInsertRowid, message: "Emergency request submitted successfully" });
@@ -780,7 +780,10 @@ export function registerRoutes(app: Express): void {
       console.error("Emergency request error:", error);
       res.status(500).json({ error: "Failed to submit emergency request" });
     }
-  });
+  };
+  
+  app.post("/api/emergency-requests", handleEmergencyRequest);
+  app.post("/api/emergency-service", handleEmergencyRequest); // Alias for frontend compatibility
 
   app.get("/api/admin/emergency-requests", async (req: Request, res: Response) => {
     try {
@@ -828,6 +831,62 @@ export function registerRoutes(app: Express): void {
     } catch (error: any) {
       console.error("Create payment intent error:", error);
       res.status(500).json({ error: error.message || "Failed to create payment intent" });
+    }
+  });
+
+  // Stripe subscription creation (for memberships)
+  app.post("/api/create-subscription", async (req: Request, res: Response) => {
+    try {
+      const { planId } = req.body;
+      const user = (req.session as any)?.user;
+      
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ error: "Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables." });
+      }
+      
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2025-05-28.basil'
+      });
+
+      // Map plan IDs to amounts (in dollars)
+      const planPrices: Record<string, number> = {
+        'basic': 49,
+        'premium': 149,
+        'elite': 299,
+        'pro_monthly': 49,
+        'pro_yearly': 490
+      };
+
+      const amount = planPrices[planId] || 49;
+      
+      // Create a payment intent for the subscription
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'cad',
+        description: `AfterHours HVAC - ${planId} Subscription`,
+        metadata: {
+          planId,
+          userId: user.id.toString(),
+          userEmail: user.email,
+          subscriptionType: 'membership'
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        amount: amount
+      });
+    } catch (error: any) {
+      console.error("Create subscription error:", error);
+      res.status(500).json({ error: error.message || "Failed to create subscription" });
     }
   });
 
