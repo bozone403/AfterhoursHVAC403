@@ -52,6 +52,17 @@ interface JobApplication {
   references?: string;
 }
 
+interface TeamMember {
+  id: number;
+  name: string;
+  title: string;
+  bio: string;
+  imageUrl: string;
+  displayOrder: number;
+  active: boolean;
+  createdAt: string;
+}
+
 interface CreateUserForm {
   username: string;
   email: string;
@@ -128,6 +139,12 @@ export default function AdminDashboardEnhanced() {
   // Fetch forum posts
   const { data: forumPosts = [], isLoading: forumLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/forum-posts"],
+    enabled: true
+  });
+
+  // Fetch team members
+  const { data: teamMembers = [], isLoading: teamLoading, refetch: refetchTeam } = useQuery<TeamMember[]>({
+    queryKey: ["/api/admin/team"],
     enabled: true
   });
 
@@ -592,6 +609,7 @@ export default function AdminDashboardEnhanced() {
         <Tabs defaultValue="users" className="space-y-6">
           <TabsList className="hvac-card p-2 bg-gradient-to-r from-blue-50 to-orange-50">
             <TabsTrigger value="users" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">User Management</TabsTrigger>
+            <TabsTrigger value="team" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Team Members</TabsTrigger>
             <TabsTrigger value="applications" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Job Applications</TabsTrigger>
             <TabsTrigger value="bookings" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Service Bookings</TabsTrigger>
             <TabsTrigger value="contacts" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Contact Messages</TabsTrigger>
@@ -870,6 +888,68 @@ export default function AdminDashboardEnhanced() {
                   ))}
                 </div>
               )}
+          </div>
+        </TabsContent>
+
+        {/* Team Members Tab */}
+        <TabsContent value="team" className="space-y-4">
+          <div className="hvac-card">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="hvac-heading-md mb-2">Team Members Management</h2>
+                <p className="hvac-text-base text-gray-600">Manage your team members displayed on the About page</p>
+              </div>
+            </div>
+
+            {teamLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600 mb-2" />
+                <p className="text-gray-600">Loading team members...</p>
+              </div>
+            ) : teamMembers && teamMembers.length > 0 ? (
+              <div className="space-y-4">
+                {teamMembers.map((member) => (
+                  <div key={member.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex gap-4">
+                        {member.imageUrl && (
+                          <img 
+                            src={member.imageUrl} 
+                            alt={member.name}
+                            className="w-16 h-16 rounded-full object-cover"
+                          />
+                        )}
+                        <div>
+                          <h3 className="font-bold text-lg text-gray-900">{member.name}</h3>
+                          <p className="text-blue-600 font-medium">{member.title}</p>
+                          <p className="text-sm text-gray-600 mt-2">{member.bio}</p>
+                          <div className="flex gap-2 mt-2">
+                            <Badge variant={member.active ? "default" : "secondary"}>
+                              {member.active ? "Active" : "Inactive"}
+                            </Badge>
+                            <Badge variant="outline">Order: {member.displayOrder}</Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 mb-4">No team members found</p>
+                <p className="text-sm text-gray-500">Add team members via the API endpoint /api/admin/team</p>
+              </div>
+            )}
           </div>
         </TabsContent>
 

@@ -74,10 +74,10 @@ const HomeLuxury = () => {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 relative z-20">
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105"
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105 w-full sm:w-auto"
                   data-testid="button-emergency-call"
                 >
                   <Phone className="w-5 h-5 mr-2" />
@@ -87,7 +87,7 @@ const HomeLuxury = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white hover:text-slate-900 font-bold text-lg px-8 py-6 rounded-xl transition-all hover:scale-105"
+                  className="bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white hover:text-slate-900 font-bold text-lg px-8 py-6 rounded-xl transition-all hover:scale-105 w-full sm:w-auto"
                   asChild
                   data-testid="button-schedule"
                 >
@@ -116,7 +116,7 @@ const HomeLuxury = () => {
             </div>
 
             {/* Right: Premium Feature Cards */}
-            <div className="space-y-4">
+            <div className="space-y-4 relative z-10 mt-8 lg:mt-0">
               <PremiumFeatureCard 
                 icon={<Shield className="w-8 h-8" />}
                 title="Certified Excellence"
