@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,11 +10,25 @@ import {
   Zap,
   AlertTriangle,
   ArrowRight,
-  Clock
+  Clock,
+  ShoppingCart
 } from "lucide-react";
 import { Link } from "wouter";
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 export default function ACRepair() {
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (service: any) => {
+    setSelectedService({
+      name: service.title,
+      price: service.price,
+      description: service.description,
+      category: 'AC Services'
+    });
+    setBookingModalOpen(true);
+  };
   const services = [
     {
       title: "AC Repair & Diagnostics",
@@ -182,57 +197,20 @@ export default function ACRepair() {
                       {service.price}
                     </p>
                     <div className="space-y-3">
-                      {service.title.includes("Repair") && (
-                        <Button 
-                          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
-                          onClick={() => {
-                            const serviceData = {
-                              name: service.title,
-                              price: "$149",
-                              description: service.description,
-                              category: 'ac-repair'
-                            };
-                            window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
-                          }}
-                        >
-                          Book Now - $149
-                        </Button>
-                      )}
-                      {service.title.includes("Installation") && (
-                        <Button 
-                          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
-                          onClick={() => {
-                            const serviceData = {
-                              name: service.title,
-                              price: "$6,499",
-                              description: service.description,
-                              category: 'ac-installation'
-                            };
-                            window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
-                          }}
-                        >
-                          Buy Now - Starting at $6,499
-                        </Button>
-                      )}
-                      {service.title.includes("Maintenance") && (
-                        <Button 
-                          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl"
-                          onClick={() => {
-                            const serviceData = {
-                              name: service.title,
-                              price: "$299",
-                              description: service.description,
-                              category: 'ac-maintenance'
-                            };
-                            window.location.href = `/stripe-checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
-                          }}
-                        >
-                          Buy Now - $299/year
-                        </Button>
-                      )}
-                      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 rounded-xl" asChild>
-                        <Link href="/quote">
-                          Get Custom Quote
+                      <Button 
+                        className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-4 rounded-xl"
+                        onClick={() => handleBookService(service)}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Book Now
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        className="w-full border-2 border-slate-300 hover:bg-slate-50 font-semibold py-4 rounded-xl" 
+                        asChild
+                      >
+                        <Link href="/contact">
+                          Learn More
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
                       </Button>
@@ -301,6 +279,15 @@ export default function ACRepair() {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 }
