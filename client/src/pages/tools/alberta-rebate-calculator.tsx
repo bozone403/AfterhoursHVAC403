@@ -156,8 +156,8 @@ export default function AlbertaRebateCalculator() {
             <Calculator className="h-5 w-5 text-green-700 mr-3" />
             <span className="text-green-800 text-lg font-bold">Alberta Rebate Calculator</span>
           </div>
-          <h1 className="text-5xl font-bold text-white mb-4">HVAC Upgrade ROI Calculator</h1>
-          <p className="text-xl text-white/80 max-w-4xl mx-auto">
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">HVAC Upgrade ROI Calculator</h1>
+          <p className="text-xl text-gray-700 max-w-4xl mx-auto">
             Calculate your savings with real Alberta rebates and current natural gas prices. 
             Get accurate payback periods for your HVAC upgrade investment.
           </p>
@@ -177,9 +177,9 @@ export default function AlbertaRebateCalculator() {
               <CardContent className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="current-equipment" className="text-white/90">Current Equipment *</Label>
+                    <Label htmlFor="current-equipment" className="text-gray-700 font-medium">Current Equipment *</Label>
                     <Select value={currentEquipment} onValueChange={setCurrentEquipment}>
-                      <SelectTrigger className="bg-white/5 backdrop-blur-sm border-white/20 text-white focus:border-amber-500">
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                         <SelectValue placeholder="Select your current system" />
                       </SelectTrigger>
                       <SelectContent>
@@ -193,9 +193,9 @@ export default function AlbertaRebateCalculator() {
                   </div>
 
                   <div>
-                    <Label htmlFor="proposed-equipment" className="text-white/90">Proposed Upgrade *</Label>
+                    <Label htmlFor="proposed-equipment" className="text-gray-700 font-medium">Proposed Upgrade *</Label>
                     <Select value={proposedEquipment} onValueChange={setProposedEquipment}>
-                      <SelectTrigger className="bg-white/5 backdrop-blur-sm border-white/20 text-white focus:border-amber-500">
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                         <SelectValue placeholder="Select upgrade option" />
                       </SelectTrigger>
                       <SelectContent>
@@ -211,20 +211,20 @@ export default function AlbertaRebateCalculator() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="monthly-bill" className="text-white/90">Average Monthly Gas Bill *</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Label htmlFor="monthly-bill" className="text-gray-700 font-medium">Average Monthly Gas Bill *</Label>
+                    <Input className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                       id="monthly-bill"
                       type="number"
                       placeholder="250"
                       value={monthlyBill}
                       onChange={(e) => setMonthlyBill(e.target.value)}
                     />
-                    <p className="text-xs text-white/60 mt-1">During heating season</p>
+                    <p className="text-xs text-gray-600 mt-1">During heating season</p>
                   </div>
 
                   <div>
-                    <Label htmlFor="home-size" className="text-white/90">Home Size (sq ft)</Label>
-                    <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                    <Label htmlFor="home-size" className="text-gray-700 font-medium">Home Size (sq ft)</Label>
+                    <Input className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"
                       id="home-size"
                       type="number"
                       placeholder="2000"
@@ -234,9 +234,9 @@ export default function AlbertaRebateCalculator() {
                   </div>
 
                   <div>
-                    <Label htmlFor="home-age" className="text-white/90">Home Age (years)</Label>
+                    <Label htmlFor="home-age" className="text-gray-700 font-medium">Home Age (years)</Label>
                     <Select value={homeAge} onValueChange={setHomeAge}>
-                      <SelectTrigger className="bg-white/5 backdrop-blur-sm border-white/20 text-white focus:border-amber-500">
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                         <SelectValue placeholder="Select age" />
                       </SelectTrigger>
                       <SelectContent>
@@ -294,8 +294,8 @@ export default function AlbertaRebateCalculator() {
                         </div>
                         <Separator />
                         <div className="flex justify-between text-lg">
-                          <span className="font-bold text-white">Net Investment:</span>
-                          <span className="font-bold text-white">${results.netCost.toLocaleString()}</span>
+                          <span className="font-bold text-gray-900">Net Investment:</span>
+                          <span className="font-bold text-gray-900">${results.netCost.toLocaleString()}</span>
                         </div>
                       </div>
                     </div>
@@ -336,17 +336,17 @@ export default function AlbertaRebateCalculator() {
                   </div>
 
                   <div className="space-y-4">
-                    <h4 className="text-lg font-bold text-white">Applicable Alberta Rebates</h4>
+                    <h4 className="text-lg font-bold text-gray-900">Applicable Alberta Rebates</h4>
                     {results.applicableRebates.map((rebate: any, index: number) => (
-                      <div key={index} className="border rounded-lg p-4">
+                      <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                         <div className="flex justify-between items-start mb-2">
-                          <h5 className="font-semibold text-white">{rebate.name}</h5>
+                          <h5 className="font-semibold text-gray-900">{rebate.name}</h5>
                           <Badge className="bg-green-100 text-green-800">
                             ${rebate.amount.toLocaleString()}
                           </Badge>
                         </div>
-                        <p className="text-sm text-white/80 mb-1">{rebate.description}</p>
-                        <p className="text-xs text-white/70">{rebate.eligibility}</p>
+                        <p className="text-sm text-gray-700 mb-1">{rebate.description}</p>
+                        <p className="text-xs text-gray-600">{rebate.eligibility}</p>
                       </div>
                     ))}
                   </div>
