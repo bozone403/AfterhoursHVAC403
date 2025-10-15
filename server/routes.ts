@@ -549,9 +549,20 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  // Team member endpoints - Public can view, Admin can CRUD
   app.get("/api/team", async (req: Request, res: Response) => {
     try {
-      const members = await storage.getTeamMembers();
+      const { sqlite } = await import('./db');
+      const members = sqlite.prepare(`
+        SELECT 
+          id, name, role, department, experience, description, 
+          specialties, photo_url as photoUrl, icon_name as iconName, 
+          icon_color as iconColor, display_order as displayOrder,
+          is_active as isActive, created_at as createdAt
+        FROM team_members 
+        WHERE is_active = 1 
+        ORDER BY display_order ASC, id ASC
+      `).all();
       res.json(members);
     } catch (error) {
       console.error("Get team members error:", error);
@@ -561,19 +572,99 @@ export function registerRoutes(app: Express): void {
 
   app.post("/api/admin/team", async (req: Request, res: Response) => {
     try {
-      const memberData = teamMemberSchema.parse(req.body);
-      const member = await storage.createTeamMember(memberData);
-      res.json(member);
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const memberData = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO team_members (
+          name, role, department, experience, description, 
+          specialties, photo_url, icon_name, icon_color, display_order, is_active
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+      `).run(
+        memberData.name || '',
+        memberData.role || '',
+        memberData.department || 'General',
+        memberData.experience || '',
+        memberData.description || '',
+        memberData.specialties || '',
+        memberData.photoUrl || '',
+        memberData.iconName || 'User',
+        memberData.iconColor || 'from-blue-600 to-blue-800',
+        memberData.displayOrder || 0
+      );
+
+      const newMember = sqlite.prepare('SELECT * FROM team_members WHERE id = ?').get(result.lastInsertRowid);
+      res.json(newMember);
     } catch (error) {
       console.error("Create team member error:", error);
       res.status(500).json({ error: "Failed to create team member" });
     }
   });
 
+  app.put("/api/admin/team/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const memberData = req.body;
+      const { sqlite } = await import('./db');
+      
+      sqlite.prepare(`
+        UPDATE team_members SET
+          name = ?, role = ?, department = ?, experience = ?,
+          description = ?, specialties = ?, photo_url = ?,
+          icon_name = ?, icon_color = ?, display_order = ?
+        WHERE id = ?
+      `).run(
+        memberData.name || '',
+        memberData.role || '',
+        memberData.department || 'General',
+        memberData.experience || '',
+        memberData.description || '',
+        memberData.specialties || '',
+        memberData.photoUrl || '',
+        memberData.iconName || 'User',
+        memberData.iconColor || 'from-blue-600 to-blue-800',
+        memberData.displayOrder || 0,
+        id
+      );
+
+      const updatedMember = sqlite.prepare(`
+        SELECT 
+          id, name, role, department, experience, description, 
+          specialties, photo_url as photoUrl, icon_name as iconName, 
+          icon_color as iconColor, display_order as displayOrder,
+          is_active as isActive, created_at as createdAt
+        FROM team_members WHERE id = ?
+      `).get(id);
+      
+      res.json(updatedMember);
+    } catch (error) {
+      console.error("Update team member error:", error);
+      res.status(500).json({ error: "Failed to update team member" });
+    }
+  });
+
   app.delete("/api/admin/team/:id", async (req: Request, res: Response) => {
     try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
       const id = parseInt(req.params.id);
-      await storage.deleteTeamMember(id);
+      const { sqlite } = await import('./db');
+      
+      // Soft delete
+      sqlite.prepare('UPDATE team_members SET is_active = 0 WHERE id = ?').run(id);
       res.json({ message: "Team member deleted" });
     } catch (error) {
       console.error("Delete team member error:", error);

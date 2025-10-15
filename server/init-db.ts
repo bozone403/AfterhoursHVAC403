@@ -89,14 +89,46 @@ async function initializeDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       role TEXT NOT NULL,
+      department TEXT DEFAULT 'General',
       experience TEXT,
       description TEXT,
       specialties TEXT,
       photo_url TEXT,
+      icon_name TEXT DEFAULT 'User',
+      icon_color TEXT DEFAULT 'from-blue-600 to-blue-800',
+      display_order INTEGER DEFAULT 0,
       is_active INTEGER DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  
+  // Add department column if it doesn't exist (migration)
+  try {
+    sqlite.exec(`ALTER TABLE team_members ADD COLUMN department TEXT DEFAULT 'General'`);
+  } catch (e) {
+    // Column already exists, ignore
+  }
+  
+  // Add icon_name column if it doesn't exist
+  try {
+    sqlite.exec(`ALTER TABLE team_members ADD COLUMN icon_name TEXT DEFAULT 'User'`);
+  } catch (e) {
+    // Column already exists, ignore
+  }
+  
+  // Add icon_color column if it doesn't exist
+  try {
+    sqlite.exec(`ALTER TABLE team_members ADD COLUMN icon_color TEXT DEFAULT 'from-blue-600 to-blue-800'`);
+  } catch (e) {
+    // Column already exists, ignore
+  }
+  
+  // Add display_order column if it doesn't exist
+  try {
+    sqlite.exec(`ALTER TABLE team_members ADD COLUMN display_order INTEGER DEFAULT 0`);
+  } catch (e) {
+    // Column already exists, ignore
+  }
 
   // Products table
   sqlite.exec(`

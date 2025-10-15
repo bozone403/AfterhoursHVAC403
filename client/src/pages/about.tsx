@@ -2,6 +2,9 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import * as LucideIcons from "lucide-react";
 import { 
   Award,
   Users,
@@ -26,34 +29,42 @@ import {
   Bot,
   Wrench,
   Home,
-  Building2
+  Building2,
+  User
 } from "lucide-react";
 
 const About = () => {
-  const teamMembers = [
-    {
-      name: "Jordan Boisclair",
-      title: "Commercial Project Coordination & Management",
-      bio: "Jordan leads the operational side of AfterHours HVAC, overseeing project coordination, material logistics, and communication between clients, trades, and suppliers. With over 15 years in the industry, he bridges field experience and business strategy to ensure every project runs smoothly, on time, and to spec.",
-      icon: Building2,
-      color: "from-blue-600 to-blue-800"
-    },
-    {
-      name: "Derek Thompson", 
-      title: "Residential New Home & Retrofit Manager",
-      bio: "Derek manages our residential division, specializing in new home installations and retrofit projects. He ensures every system is designed and installed for long-term reliability, energy efficiency, and comfort. Derek's hands-on expertise and attention to detail make him a trusted name for homeowners and builders alike.",
-      icon: Home,
-      color: "from-green-600 to-green-800"
-    },
-    {
-      name: "Earl (AI Operations System)",
-      title: "Internal Records & Technical Support AI", 
-      bio: "Earl is our in-house AI assistant — part record keeper, part technical mentor. He helps our team manage documentation, building data, and field theory. Earl's always learning, expanding his knowledge of HVAC codes, manuals, and mechanical literature so our technicians can get instant answers when they need them most.",
-      icon: Bot,
-      color: "from-orange-500 to-orange-700",
-      isAI: true
+  // Fetch team members from database
+  const { data: teamMembers = [], isLoading: teamLoading } = useQuery({
+    queryKey: ["/api/team"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/team");
+      return response.json();
     }
-  ];
+  });
+
+  // Helper function to get icon component by name
+  const getIconComponent = (iconName: string) => {
+    const icons: Record<string, any> = {
+      Building2: LucideIcons.Building2,
+      Home: LucideIcons.Home,
+      Bot: LucideIcons.Bot,
+      User: LucideIcons.User,
+      Wrench: LucideIcons.Wrench,
+      Settings: LucideIcons.Settings,
+      Users: LucideIcons.Users,
+      Shield: LucideIcons.Shield,
+      Award: LucideIcons.Award,
+      Star: LucideIcons.Star,
+      ThermometerSun: LucideIcons.ThermometerSun,
+      Snowflake: LucideIcons.Snowflake,
+      Wind: LucideIcons.Wind,
+      Zap: LucideIcons.Zap,
+      Target: LucideIcons.Target,
+      TrendingUp: LucideIcons.TrendingUp
+    };
+    return icons[iconName] || LucideIcons.User;
+  };
 
   const values = [
     {
@@ -209,24 +220,72 @@ const About = () => {
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-              {teamMembers.map((member, index) => (
-                <div key={index} className={`bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 group ${member.isAI ? 'ring-2 ring-orange-500 ring-opacity-50' : ''}`}>
-                  <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${member.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ${member.isAI ? 'animate-pulse' : ''}`}>
-                    <member.icon className="w-10 h-10 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">{member.name}</h3>
-                  <p className="text-orange-600 font-bold mb-4">{member.title}</p>
-                  <p className="text-gray-600 leading-relaxed">{member.bio}</p>
-                  {member.isAI && (
-                    <div className="mt-4 flex items-center space-x-2">
-                      <Sparkles className="w-4 h-4 text-orange-500" />
-                      <span className="text-sm text-orange-600 font-semibold">AI Innovation</span>
+            {teamLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading team members...</p>
+              </div>
+            ) : teamMembers.length > 0 ? (
+              <>
+                {/* Group by department if multiple departments exist */}
+                {Array.from(new Set(teamMembers.map((m: any) => m.department || 'General'))).map((department) => {
+                  const deptMembers = teamMembers.filter((m: any) => (m.department || 'General') === department);
+                  return (
+                    <div key={department} className="mb-16">
+                      {teamMembers.some((m: any) => m.department && m.department !== 'General') && (
+                        <h3 className="text-2xl font-bold text-gray-800 mb-8 text-center">{department}</h3>
+                      )}
+                      <div className="grid lg:grid-cols-3 gap-8">
+                        {deptMembers.map((member: any) => {
+                          const IconComponent = getIconComponent(member.iconName || 'User');
+                          const isAI = member.name?.toLowerCase().includes('earl') || member.iconName === 'Bot';
+                          
+                          return (
+                            <div key={member.id} className={`bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 group ${isAI ? 'ring-2 ring-orange-500 ring-opacity-50' : ''}`}>
+                              {member.photoUrl ? (
+                                <img 
+                                  src={member.photoUrl} 
+                                  alt={member.name}
+                                  className="w-20 h-20 rounded-2xl object-cover mb-6 group-hover:scale-110 transition-transform duration-300"
+                                />
+                              ) : (
+                                <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${member.iconColor || 'from-blue-600 to-blue-800'} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 ${isAI ? 'animate-pulse' : ''}`}>
+                                  <IconComponent className="w-10 h-10 text-white" />
+                                </div>
+                              )}
+                              <h3 className="text-2xl font-black text-gray-900 mb-2">{member.name}</h3>
+                              <p className="text-orange-600 font-bold mb-4">{member.role}</p>
+                              <p className="text-gray-600 leading-relaxed">{member.description}</p>
+                              {member.experience && (
+                                <p className="text-sm text-gray-500 mt-3">
+                                  <strong>Experience:</strong> {member.experience}
+                                </p>
+                              )}
+                              {member.specialties && (
+                                <p className="text-sm text-gray-500 mt-2">
+                                  <strong>Specialties:</strong> {member.specialties}
+                                </p>
+                              )}
+                              {isAI && (
+                                <div className="mt-4 flex items-center space-x-2">
+                                  <Sparkles className="w-4 h-4 text-orange-500" />
+                                  <span className="text-sm text-orange-600 font-semibold">AI Innovation</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </>
+            ) : (
+              <div className="text-center py-12 text-gray-600">
+                <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <p>Team information coming soon!</p>
+              </div>
+            )}
           </div>
         </section>
 
