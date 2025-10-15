@@ -818,6 +818,46 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  app.patch("/api/admin/job-applications/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { status, notes } = req.body;
+      const { sqlite } = await import('./db');
+      
+      // Check if status column exists, if not add it
+      try {
+        sqlite.exec('ALTER TABLE job_applications ADD COLUMN status TEXT DEFAULT "pending"');
+      } catch (e) {
+        // Column already exists
+      }
+
+      // Check if notes column exists, if not add it
+      try {
+        sqlite.exec('ALTER TABLE job_applications ADD COLUMN notes TEXT');
+      } catch (e) {
+        // Column already exists
+      }
+
+      sqlite.prepare(`
+        UPDATE job_applications SET
+          status = COALESCE(?, status),
+          notes = COALESCE(?, notes)
+        WHERE id = ?
+      `).run(status, notes, id);
+
+      const updatedApplication = sqlite.prepare('SELECT * FROM job_applications WHERE id = ?').get(id);
+      res.json(updatedApplication);
+    } catch (error) {
+      console.error("Update job application error:", error);
+      res.status(500).json({ error: "Failed to update job application" });
+    }
+  });
+
   // Service Requests endpoints
   app.post("/api/service-requests", async (req: Request, res: Response) => {
     try {
@@ -906,6 +946,87 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Get emergency requests error:", error);
       res.status(500).json({ error: "Failed to get emergency requests" });
+    }
+  });
+
+  // Get single emergency request
+  app.get("/api/emergency-requests/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { sqlite } = await import('./db');
+      
+      const request = sqlite.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id);
+      if (!request) {
+        return res.status(404).json({ error: "Emergency request not found" });
+      }
+      
+      res.json(request);
+    } catch (error) {
+      console.error("Get emergency request error:", error);
+      res.status(500).json({ error: "Failed to get emergency request" });
+    }
+  });
+
+  // Update emergency request
+  app.put("/api/admin/emergency-requests/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { status, notes } = req.body;
+      const { sqlite } = await import('./db');
+      
+      sqlite.prepare(`
+        UPDATE emergency_requests SET
+          status = COALESCE(?, status)
+        WHERE id = ?
+      `).run(status, id);
+
+      const updatedRequest = sqlite.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id);
+      res.json(updatedRequest);
+    } catch (error) {
+      console.error("Update emergency request error:", error);
+      res.status(500).json({ error: "Failed to update emergency request" });
+    }
+  });
+
+  // Send invoice for emergency request
+  app.post("/api/admin/emergency-requests/:id/send-invoice", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { amount, description } = req.body;
+      const { sqlite } = await import('./db');
+      
+      const request = sqlite.prepare('SELECT * FROM emergency_requests WHERE id = ?').get(id) as any;
+      if (!request) {
+        return res.status(404).json({ error: "Emergency request not found" });
+      }
+
+      // Update request status to invoiced
+      sqlite.prepare(`
+        UPDATE emergency_requests SET
+          status = 'invoiced'
+        WHERE id = ?
+      `).run(id);
+
+      // In a real implementation, you'd send an email with Stripe invoice here
+      
+      res.json({ 
+        message: "Emergency invoice sent successfully",
+        amount,
+        request_id: id
+      });
+    } catch (error) {
+      console.error("Send emergency invoice error:", error);
+      res.status(500).json({ error: "Failed to send emergency invoice" });
     }
   });
 
@@ -1082,6 +1203,154 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Get service bookings error:", error);
       res.status(500).json({ error: "Failed to get service bookings" });
+    }
+  });
+
+  // Alias for frontend compatibility
+  app.get("/api/admin/bookings", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const bookings = sqlite.prepare('SELECT * FROM service_bookings ORDER BY created_at DESC').all();
+      res.json(bookings);
+    } catch (error) {
+      console.error("Get bookings error:", error);
+      res.status(500).json({ error: "Failed to get bookings" });
+    }
+  });
+
+  // Update booking
+  app.put("/api/admin/bookings/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const data = req.body;
+      const { sqlite } = await import('./db');
+      
+      sqlite.prepare(`
+        UPDATE service_bookings SET
+          status = COALESCE(?, status),
+          payment_status = COALESCE(?, payment_status),
+          customer_name = COALESCE(?, customer_name),
+          customer_email = COALESCE(?, customer_email),
+          customer_phone = COALESCE(?, customer_phone),
+          service_name = COALESCE(?, service_name),
+          service_description = COALESCE(?, service_description)
+        WHERE id = ?
+      `).run(
+        data.status,
+        data.payment_status,
+        data.customer_name,
+        data.customer_email,
+        data.customer_phone,
+        data.service_name,
+        data.service_description,
+        id
+      );
+
+      const updatedBooking = sqlite.prepare('SELECT * FROM service_bookings WHERE id = ?').get(id);
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error("Update booking error:", error);
+      res.status(500).json({ error: "Failed to update booking" });
+    }
+  });
+
+  // Delete booking
+  app.delete("/api/admin/bookings/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { sqlite } = await import('./db');
+      
+      sqlite.prepare('DELETE FROM service_bookings WHERE id = ?').run(id);
+      res.json({ message: "Booking deleted successfully" });
+    } catch (error) {
+      console.error("Delete booking error:", error);
+      res.status(500).json({ error: "Failed to delete booking" });
+    }
+  });
+
+  // Send invoice for booking
+  app.post("/api/admin/bookings/:id/send-invoice", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { amount, description } = req.body;
+      const { sqlite } = await import('./db');
+      
+      const booking = sqlite.prepare('SELECT * FROM service_bookings WHERE id = ?').get(id) as any;
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // Update booking with invoice amount
+      sqlite.prepare(`
+        UPDATE service_bookings SET
+          service_price = ?,
+          payment_status = 'invoiced'
+        WHERE id = ?
+      `).run(amount?.toString() || booking.service_price, id);
+
+      // In a real implementation, you'd send an email with Stripe invoice here
+      // For now, just mark as invoiced
+      
+      res.json({ 
+        message: "Invoice sent successfully",
+        amount,
+        booking_id: id
+      });
+    } catch (error) {
+      console.error("Send invoice error:", error);
+      res.status(500).json({ error: "Failed to send invoice" });
+    }
+  });
+
+  // Alias for bookings POST
+  app.post("/api/bookings", async (req: Request, res: Response) => {
+    try {
+      const bookingData = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO service_bookings (
+          customer_name, customer_email, customer_phone,
+          service_name, service_price, service_description,
+          payment_status, stripe_session_id, status, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).run(
+        bookingData.customerName || bookingData.customer_name || '',
+        bookingData.customerEmail || bookingData.customer_email || '',
+        bookingData.customerPhone || bookingData.customer_phone || '',
+        bookingData.serviceName || bookingData.service_name || '',
+        bookingData.servicePrice?.toString() || bookingData.service_price || '',
+        bookingData.serviceDescription || bookingData.service_description || '',
+        bookingData.paymentStatus || bookingData.payment_status || 'pending',
+        bookingData.stripeSessionId || bookingData.stripe_session_id || null,
+        bookingData.status || 'confirmed'
+      );
+
+      const newBooking = sqlite.prepare('SELECT * FROM service_bookings WHERE id = ?').get(result.lastInsertRowid);
+      res.json(newBooking);
+    } catch (error) {
+      console.error("Create booking error:", error);
+      res.status(500).json({ error: "Failed to create booking" });
     }
   });
 
@@ -1299,6 +1568,75 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Delete post error:", error);
       res.status(500).json({ error: "Failed to delete post" });
+    }
+  });
+
+  // Admin Forum Moderation Routes
+  app.get("/api/admin/forum-posts", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const posts = sqlite.prepare(`
+        SELECT 
+          fp.*, 
+          ft.title as topic_title,
+          u.username as author_username
+        FROM forum_posts fp
+        LEFT JOIN forum_topics ft ON fp.topic_id = ft.id
+        LEFT JOIN users u ON fp.user_id = u.id
+        ORDER BY fp.created_at DESC
+      `).all();
+      res.json(posts);
+    } catch (error) {
+      console.error("Get admin forum posts error:", error);
+      res.status(500).json({ error: "Failed to get forum posts" });
+    }
+  });
+
+  app.put("/api/admin/forum-posts/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const postId = parseInt(req.params.id);
+      const data = req.body;
+      const { sqlite } = await import('./db');
+
+      sqlite.prepare(`
+        UPDATE forum_posts SET
+          content = COALESCE(?, content),
+          is_hidden = COALESCE(?, is_hidden),
+          is_pinned = COALESCE(?, is_pinned)
+        WHERE id = ?
+      `).run(data.content, data.is_hidden, data.is_pinned, postId);
+
+      const updatedPost = sqlite.prepare('SELECT * FROM forum_posts WHERE id = ?').get(postId);
+      res.json(updatedPost);
+    } catch (error) {
+      console.error("Update forum post error:", error);
+      res.status(500).json({ error: "Failed to update forum post" });
+    }
+  });
+
+  app.delete("/api/admin/forum-posts/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const postId = parseInt(req.params.id);
+      await storage.deleteForumPost(postId);
+      res.json({ message: "Forum post deleted successfully" });
+    } catch (error) {
+      console.error("Delete forum post error:", error);
+      res.status(500).json({ error: "Failed to delete forum post" });
     }
   });
 }

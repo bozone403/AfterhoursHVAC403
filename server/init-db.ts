@@ -130,6 +130,68 @@ async function initializeDatabase() {
     // Column already exists, ignore
   }
 
+  // Seed team members if table is empty
+  const existingMembers = sqlite.prepare('SELECT COUNT(*) as count FROM team_members WHERE is_active = 1').get() as { count: number };
+  if (existingMembers.count === 0) {
+    console.log('Seeding team members...');
+    
+    // Jordan Boisclair
+    sqlite.prepare(`
+      INSERT INTO team_members (
+        name, role, department, experience, description, specialties,
+        icon_name, icon_color, display_order, is_active
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    `).run(
+      'Jordan Boisclair',
+      'Commercial Project Coordination & Management',
+      'Commercial',
+      '15+ years in HVAC industry',
+      'Jordan leads the operational side of AfterHours HVAC, overseeing project coordination, material logistics, and communication between clients, trades, and suppliers. With over 15 years in the industry, he bridges field experience and business strategy to ensure every project runs smoothly, on time, and to spec.',
+      'Project Management, Commercial HVAC, Logistics, Client Relations',
+      'Building2',
+      'from-blue-600 to-blue-800',
+      1
+    );
+
+    // Derek Thompson
+    sqlite.prepare(`
+      INSERT INTO team_members (
+        name, role, department, experience, description, specialties,
+        icon_name, icon_color, display_order, is_active
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    `).run(
+      'Derek Thompson',
+      'Residential New Home & Retrofit Manager',
+      'Residential',
+      '10+ years specializing in residential HVAC',
+      'Derek manages our residential division, specializing in new home installations and retrofit projects. He ensures every system is designed and installed for long-term reliability, energy efficiency, and comfort. Derek\'s hands-on expertise and attention to detail make him a trusted name for homeowners and builders alike.',
+      'Residential HVAC, New Home Installations, Retrofits, Energy Efficiency',
+      'Home',
+      'from-green-600 to-green-800',
+      2
+    );
+
+    // Earl (AI)
+    sqlite.prepare(`
+      INSERT INTO team_members (
+        name, role, department, experience, description, specialties,
+        icon_name, icon_color, display_order, is_active
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    `).run(
+      'Earl (AI Operations System)',
+      'Internal Records & Technical Support AI',
+      'Technical Support',
+      'Continuous learning AI assistant',
+      'Earl is our in-house AI assistant — part record keeper, part technical mentor. He helps our team manage documentation, building data, and field theory. Earl\'s always learning, expanding his knowledge of HVAC codes, manuals, and mechanical literature so our technicians can get instant answers when they need them most.',
+      'Documentation, Technical Support, HVAC Codes, Knowledge Management, AI Assistance',
+      'Bot',
+      'from-orange-500 to-orange-700',
+      3
+    );
+
+    console.log('✅ Team members seeded successfully!');
+  }
+
   // Products table
   sqlite.exec(`
     CREATE TABLE IF NOT EXISTS products (
