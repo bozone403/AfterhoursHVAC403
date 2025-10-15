@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { storage } from "./storage-simple";
+import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
@@ -768,6 +768,223 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Get service bookings error:", error);
       res.status(500).json({ error: "Failed to get service bookings" });
+    }
+  });
+
+  // Forum API Routes
+  app.get("/api/forum/categories", async (req: Request, res: Response) => {
+    try {
+      const categories = await storage.getForumCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Get forum categories error:", error);
+      res.status(500).json({ error: "Failed to get forum categories" });
+    }
+  });
+
+  app.get("/api/forum/categories/:categoryId/topics", async (req: Request, res: Response) => {
+    try {
+      const categoryId = parseInt(req.params.categoryId);
+      const topics = await storage.getForumTopics(categoryId);
+      res.json(topics);
+    } catch (error) {
+      console.error("Get forum topics error:", error);
+      res.status(500).json({ error: "Failed to get forum topics" });
+    }
+  });
+
+  app.get("/api/forum/topics/:topicId/posts", async (req: Request, res: Response) => {
+    try {
+      const topicId = parseInt(req.params.topicId);
+      const posts = await storage.getForumPosts(topicId);
+      res.json(posts);
+    } catch (error) {
+      console.error("Get forum posts error:", error);
+      res.status(500).json({ error: "Failed to get forum posts" });
+    }
+  });
+
+  app.post("/api/forum/topics", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const topicData = {
+        ...req.body,
+        userId: user.id,
+        displayName: req.body.displayName || user.username
+      };
+      const topic = await storage.createForumTopic(topicData);
+      res.json(topic);
+    } catch (error) {
+      console.error("Create forum topic error:", error);
+      res.status(500).json({ error: "Failed to create forum topic" });
+    }
+  });
+
+  app.post("/api/forum/posts", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const postData = {
+        ...req.body,
+        userId: user.id,
+        displayName: req.body.displayName || user.username
+      };
+      const post = await storage.createForumPost(postData);
+      res.json(post);
+    } catch (error) {
+      console.error("Create forum post error:", error);
+      res.status(500).json({ error: "Failed to create forum post" });
+    }
+  });
+
+  app.get("/api/forum/likes/count", async (req: Request, res: Response) => {
+    try {
+      const topicId = req.query.topicId ? parseInt(req.query.topicId as string) : undefined;
+      const postId = req.query.postId ? parseInt(req.query.postId as string) : undefined;
+
+      let count = 0;
+      if (topicId) {
+        count = await storage.getTopicLikeCount(topicId);
+      } else if (postId) {
+        count = await storage.getPostLikeCount(postId);
+      }
+
+      res.json({ count });
+    } catch (error) {
+      console.error("Get like count error:", error);
+      res.status(500).json({ error: "Failed to get like count" });
+    }
+  });
+
+  app.get("/api/forum/likes/check", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.json({ hasLiked: false });
+      }
+
+      const topicId = req.query.topicId ? parseInt(req.query.topicId as string) : undefined;
+      const postId = req.query.postId ? parseInt(req.query.postId as string) : undefined;
+
+      let hasLiked = false;
+      if (topicId) {
+        hasLiked = await storage.hasUserLikedTopic(user.id, topicId);
+      } else if (postId) {
+        hasLiked = await storage.hasUserLikedPost(user.id, postId);
+      }
+
+      res.json({ hasLiked });
+    } catch (error) {
+      console.error("Check like error:", error);
+      res.status(500).json({ error: "Failed to check like status" });
+    }
+  });
+
+  app.post("/api/forum/likes", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const likeData = {
+        ...req.body,
+        userId: user.id
+      };
+      const like = await storage.createForumLike(likeData);
+      res.json(like);
+    } catch (error) {
+      console.error("Create like error:", error);
+      res.status(500).json({ error: "Failed to create like" });
+    }
+  });
+
+  app.delete("/api/forum/likes", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const topicId = req.query.topicId ? parseInt(req.query.topicId as string) : undefined;
+      const postId = req.query.postId ? parseInt(req.query.postId as string) : undefined;
+
+      await storage.deleteForumLike(user.id, topicId, postId);
+      res.json({ message: "Like removed successfully" });
+    } catch (error) {
+      console.error("Delete like error:", error);
+      res.status(500).json({ error: "Failed to delete like" });
+    }
+  });
+
+  app.put("/api/forum/topics/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const topicId = parseInt(req.params.id);
+      const topic = await storage.updateForumTopic(topicId, req.body);
+      res.json(topic);
+    } catch (error) {
+      console.error("Update topic error:", error);
+      res.status(500).json({ error: "Failed to update topic" });
+    }
+  });
+
+  app.put("/api/forum/posts/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const postId = parseInt(req.params.id);
+      const post = await storage.updateForumPost(postId, req.body);
+      res.json(post);
+    } catch (error) {
+      console.error("Update post error:", error);
+      res.status(500).json({ error: "Failed to update post" });
+    }
+  });
+
+  app.delete("/api/forum/topics/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const topicId = parseInt(req.params.id);
+      await storage.deleteForumTopic(topicId);
+      res.json({ message: "Topic deleted successfully" });
+    } catch (error) {
+      console.error("Delete topic error:", error);
+      res.status(500).json({ error: "Failed to delete topic" });
+    }
+  });
+
+  app.delete("/api/forum/posts/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const postId = parseInt(req.params.id);
+      await storage.deleteForumPost(postId);
+      res.json({ message: "Post deleted successfully" });
+    } catch (error) {
+      console.error("Delete post error:", error);
+      res.status(500).json({ error: "Failed to delete post" });
     }
   });
 }

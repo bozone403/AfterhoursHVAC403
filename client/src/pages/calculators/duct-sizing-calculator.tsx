@@ -175,7 +175,6 @@ function DuctSizingCalculatorContent() {
                       value={cfm}
                       onChange={(e) => setCfm(e.target.value)}
                       placeholder="e.g., 1200"
-                      className="border-gray-300"
                     />
                   </div>
                   <div>
@@ -213,18 +212,16 @@ function DuctSizingCalculatorContent() {
                   <div className="space-y-3">
                     {rooms.map((room, index) => (
                       <div key={index} className="flex gap-2 items-center">
-                        <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                        <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500 flex-1"
                           value={room.name}
                           onChange={(e) => updateRoom(index, 'name', e.target.value)}
                           placeholder="Room name"
-                          className="flex-1 border-gray-300"
                         />
-                        <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                        <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500 w-24"
                           type="number"
                           value={room.cfm}
                           onChange={(e) => updateRoom(index, 'cfm', e.target.value)}
                           placeholder="CFM"
-                          className="w-24 border-gray-300"
                         />
                         <Button
                           onClick={() => removeRoom(index)}

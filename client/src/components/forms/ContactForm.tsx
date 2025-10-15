@@ -44,7 +44,7 @@ const ContactForm = () => {
     setFormError(false);
     
     try {
-      await apiRequest('POST', '/api/contact', data);
+      await apiRequest('POST', '/api/admin/contacts', data);
       
       setFormSuccess(true);
       toast({

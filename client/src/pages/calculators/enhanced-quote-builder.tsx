@@ -1035,12 +1035,11 @@ Thank you for choosing AfterHours HVAC for your project needs.`;
             <div className="p-6 space-y-4">
               <div>
                 <Label htmlFor="customerName" className="text-gray-800 font-semibold">Customer Name</Label>
-                <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500 mt-1"
                   id="customerName"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="John Smith"
-                  className="mt-1 text-white"
                 />
               </div>
               <div>
@@ -1056,23 +1055,21 @@ Thank you for choosing AfterHours HVAC for your project needs.`;
               </div>
               <div>
                 <Label htmlFor="customerPhone" className="text-gray-800 font-semibold">Phone Number</Label>
-                <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500 mt-1"
                   id="customerPhone"
                   value={customerInfo.phone}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
                   placeholder="(403) 555-0123"
-                  className="mt-1 text-white"
                 />
               </div>
               <div>
                 <Label htmlFor="customerEmail" className="text-gray-800 font-semibold">Email Address</Label>
-                <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500"
+                <Input className="bg-white/5 backdrop-blur-sm border-white/20 text-white placeholder:text-white/40 focus:border-amber-500 mt-1"
                   id="customerEmail"
                   type="email"
                   value={customerInfo.email}
                   onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="john@example.com"
-                  className="mt-1 text-white"
                 />
               </div>
               <div>
