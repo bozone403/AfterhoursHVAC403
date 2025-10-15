@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +14,25 @@ import {
   Home,
   AlertCircle,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  ShoppingCart
 } from "lucide-react";
 import { Link } from "wouter";
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 export default function DuctCleaning() {
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = () => {
+    setSelectedService({
+      name: 'Professional Duct Cleaning',
+      price: 499,
+      description: 'Complete HVAC duct cleaning service for your home',
+      category: 'Duct Cleaning Service'
+    });
+    setBookingModalOpen(true);
+  };
   const benefits = [
     {
       icon: Wind,
@@ -98,20 +113,24 @@ export default function DuctCleaning() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg" 
+                  onClick={handleBookService}
                   className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105"
-                  data-testid="button-call"
+                  data-testid="button-book"
                 >
-                  <Phone className="w-5 h-5 mr-2" />
-                  Call (403) 613-6014
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Book Duct Cleaning
                 </Button>
                 <Button 
                   size="lg" 
                   variant="outline"
                   className="bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white hover:text-slate-900 font-bold text-lg px-8 py-6 rounded-xl transition-all hover:scale-105"
                   asChild
-                  data-testid="button-quote"
+                  data-testid="button-call"
                 >
-                  <Link href="/quote">Free Air Quality Assessment</Link>
+                  <a href="tel:4036136014">
+                    <Phone className="w-5 h-5 mr-2" />
+                    Call (403) 613-6014
+                  </a>
                 </Button>
               </div>
             </div>
@@ -322,6 +341,15 @@ export default function DuctCleaning() {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 }
