@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
 import { CheckCircle, AlertCircle, Clock } from 'lucide-react';

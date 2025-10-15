@@ -141,6 +141,13 @@ export interface IStorage {
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
   updateContactSubmissionStatus(id: number, status: string): Promise<ContactSubmission | undefined>;
   
+  // Team Member methods
+  getTeamMembers(): Promise<TeamMember[]>;
+  getTeamMemberById(id: number): Promise<TeamMember | undefined>;
+  createTeamMember(member: InsertTeamMember): Promise<TeamMember>;
+  updateTeamMember(id: number, data: Partial<TeamMember>): Promise<TeamMember | undefined>;
+  deleteTeamMember(id: number): Promise<boolean>;
+  
   getEmergencyRequests(): Promise<EmergencyRequest[]>;
   getAllEmergencyRequests(): Promise<EmergencyRequest[]>;
   getUserEmergencyRequests(userId: number): Promise<EmergencyRequest[]>;
@@ -901,6 +908,38 @@ export class DatabaseStorage implements IStorage {
       .where(eq(contactSubmissions.id, id))
       .returning();
     return updated;
+  }
+
+  // TEAM MEMBER METHODS
+  async getTeamMembers(): Promise<TeamMember[]> {
+    return await db.select().from(teamMembers);
+  }
+
+  async getTeamMemberById(id: number): Promise<TeamMember | undefined> {
+    const [member] = await db.select().from(teamMembers).where(eq(teamMembers.id, id));
+    return member;
+  }
+
+  async createTeamMember(member: InsertTeamMember): Promise<TeamMember> {
+    const [newMember] = await db
+      .insert(teamMembers)
+      .values(member)
+      .returning();
+    return newMember;
+  }
+
+  async updateTeamMember(id: number, data: Partial<TeamMember>): Promise<TeamMember | undefined> {
+    const [updated] = await db
+      .update(teamMembers)
+      .set(data)
+      .where(eq(teamMembers.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteTeamMember(id: number): Promise<boolean> {
+    await db.delete(teamMembers).where(eq(teamMembers.id, id));
+    return true;
   }
 
   async getEmergencyRequests(): Promise<EmergencyRequest[]> {
