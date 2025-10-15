@@ -6,9 +6,22 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThermometerSun, Star, Award, Shield, Zap, CheckCircle, ArrowRight, ShoppingCart, Sparkles, Phone } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const FurnacesShop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (furnace: any) => {
+    setSelectedService({
+      name: furnace.name,
+      price: furnace.price,
+      description: `${furnace.efficiency} furnace with ${furnace.features[0]}`,
+      category: 'Furnace'
+    });
+    setBookingModalOpen(true);
+  };
 
   const furnaceModels = [
     {
@@ -345,9 +358,19 @@ const FurnacesShop = () => {
                       Buy Now - ${furnace.price.toLocaleString()}
                     </Button>
                     <div className="flex gap-3">
+                      <Button
+                        size="lg"
+                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold text-lg px-8"
+                        onClick={() => handleBookService(furnace)}
+                        data-testid={`button-book-${furnace.id}`}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Book Now
+                      </Button>
                       <Button 
-                        className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:scale-105 transition-all"
-                        data-testid={`button-quote-${furnace.id}`}
+                        variant="outline" 
+                        className="border-2 hover:bg-gray-50"
+                        data-testid={`button-call-${furnace.id}`}
                         asChild
                       >
                         <Link href="/quote">
@@ -457,6 +480,15 @@ const FurnacesShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };
