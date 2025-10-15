@@ -4,11 +4,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, Star, Award, Shield, Zap, CheckCircle, ArrowRight, Phone, ChefHat, Briefcase, Home, Warehouse, Calendar, Mail, Sparkles } from 'lucide-react';
+import { Building2, Star, Award, Shield, Zap, CheckCircle, ArrowRight, Phone, ChefHat, Briefcase, Home, Warehouse, Calendar, Mail, Sparkles, ShoppingCart } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const CommercialShop = () => {
   const [activeTab, setActiveTab] = useState('restaurants');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (title: string, description: string) => {
+    setSelectedService({
+      name: title,
+      price: 'Custom Quote',
+      description: description,
+      category: 'Commercial HVAC Services'
+    });
+    setBookingModalOpen(true);
+  };
 
   const niches = {
     restaurants: {
@@ -364,15 +377,15 @@ const CommercialShop = () => {
 
               <Card className="bg-white border-2 border-purple-200">
                 <CardContent className="p-6 text-center">
-                  <Mail className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Get Quote</h3>
-                  <p className="text-gray-600 mb-4">Custom maintenance proposal</p>
+                  <ShoppingCart className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Book Service</h3>
+                  <p className="text-gray-600 mb-4">Custom commercial quote</p>
                   <Button 
-                    asChild 
+                    onClick={() => handleBookService('Commercial HVAC Service', 'Custom commercial HVAC installation or maintenance')}
                     className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
-                    data-testid="button-email"
+                    data-testid="button-book-commercial"
                   >
-                    <a href="mailto:Jordan@Afterhourshvac.ca">Email Jordan</a>
+                    Request Service
                   </Button>
                 </CardContent>
               </Card>
@@ -409,6 +422,15 @@ const CommercialShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };

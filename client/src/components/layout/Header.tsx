@@ -55,7 +55,7 @@ const Header = () => {
         { name: "Maintenance Plans", href: "/shop/maintenance-plans", isPro: false }
       ]
     },
-
+    { name: "Memberships", href: "/membership-simple", icon: Crown },
     { name: "Forum", href: "/forum", icon: MessageSquare },
     { name: "About", href: "/about" }
   ];

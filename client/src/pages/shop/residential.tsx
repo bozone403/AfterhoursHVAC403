@@ -6,9 +6,22 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Home, Star, Award, Shield, Zap, CheckCircle, ArrowRight, ShoppingCart, Package, Sparkles, Phone, ThermometerSun, Snowflake } from 'lucide-react';
 import { Link } from 'wouter';
+import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const ResidentialShop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
+
+  const handleBookService = (pkg: any) => {
+    setSelectedService({
+      name: pkg.name,
+      price: pkg.price,
+      description: pkg.description,
+      category: 'Residential HVAC Package'
+    });
+    setBookingModalOpen(true);
+  };
 
   const residentialPackages = [
     {
@@ -333,12 +346,10 @@ const ResidentialShop = () => {
                     <Button 
                       className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:scale-105 transition-all"
                       data-testid={`button-quote-${pkg.id}`}
-                      asChild
+                      onClick={() => handleBookService(pkg)}
                     >
-                      <Link href="/contact">
-                        Get Quote
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Book Now
                     </Button>
                     <Button 
                       variant="outline" 
@@ -346,9 +357,9 @@ const ResidentialShop = () => {
                       data-testid={`button-call-${pkg.id}`}
                       asChild
                     >
-                      <Link href="/contact">
+                      <a href="tel:4036136014">
                         <Phone className="w-4 h-4" />
-                      </Link>
+                      </a>
                     </Button>
                   </div>
                 </CardContent>
@@ -487,6 +498,15 @@ const ResidentialShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };
