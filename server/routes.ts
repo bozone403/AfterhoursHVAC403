@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import Stripe from "stripe";
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -514,7 +515,14 @@ export function registerRoutes(app: Express): void {
       }
 
       const { sqlite } = await import('./db');
-      const users = sqlite.prepare('SELECT id, username, email, role, is_admin, created_at FROM users').all();
+      const users = sqlite.prepare(`
+        SELECT 
+          id, username, email, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin, 
+          has_pro_access as hasProAccess, account_locked as accountLocked,
+          created_at as createdAt, last_login as lastLogin
+        FROM users
+      `).all();
       res.json(users);
     } catch (error) {
       console.error("Get users error:", error);
@@ -522,8 +530,8 @@ export function registerRoutes(app: Express): void {
     }
   });
 
-  // Update user roles and access levels
-  app.patch("/api/admin/users/:id", async (req: Request, res: Response) => {
+  // Update user roles and access levels (both PATCH and PUT for compatibility)
+  const updateUserHandler = async (req: Request, res: Response) => {
     try {
       const user = (req.session as any)?.user;
       if (!user || !user.isAdmin) {
@@ -534,16 +542,27 @@ export function registerRoutes(app: Express): void {
       const updates = req.body;
       const { sqlite } = await import('./db');
 
-      // Build dynamic update query based on provided fields
-      const allowedFields = ['role', 'is_admin', 'has_pro_access', 'has_pro'];
-      const updateFields = [];
-      const values = [];
+      // Map frontend fields to database columns
+      const fieldMap: Record<string, string> = {
+        'isAdmin': 'is_admin',
+        'hasProAccess': 'has_pro_access',
+        'role': 'role',
+        'userType': 'user_type',
+        'accountLocked': 'account_locked',
+        'firstName': 'first_name',
+        'lastName': 'last_name',
+        'phone': 'phone',
+        'email': 'email'
+      };
+
+      const updateFields: string[] = [];
+      const values: any[] = [];
 
       for (const [key, value] of Object.entries(updates)) {
-        if (allowedFields.includes(key)) {
-          updateFields.push(`${key} = ?`);
-          values.push(value);
-        }
+        if (key === 'id') continue; // Skip ID field
+        const dbField = fieldMap[key] || key;
+        updateFields.push(`${dbField} = ?`);
+        values.push(value);
       }
 
       if (updateFields.length === 0) {
@@ -562,7 +581,10 @@ export function registerRoutes(app: Express): void {
       console.error("Update user error:", error);
       res.status(500).json({ error: "Failed to update user" });
     }
-  });
+  };
+
+  app.patch("/api/admin/users/:id", updateUserHandler);
+  app.put("/api/admin/users/:id", updateUserHandler);
 
   // Job Applications endpoints
   app.post("/api/job-applications", async (req: Request, res: Response) => {
@@ -701,27 +723,77 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  // Stripe payment intent creation
+  app.post("/api/create-payment-intent", async (req: Request, res: Response) => {
+    try {
+      const { amount, description, metadata } = req.body;
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ error: "Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables." });
+      }
+      
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2025-05-28.basil'
+      });
+      
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'cad',
+        description: description || 'AfterHours HVAC Service',
+        metadata: metadata || {},
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
+    } catch (error: any) {
+      console.error("Create payment intent error:", error);
+      res.status(500).json({ error: error.message || "Failed to create payment intent" });
+    }
+  });
+
   // Stripe checkout session creation
   app.post("/api/create-checkout-session", async (req: Request, res: Response) => {
     try {
       const { serviceName, price, description, category } = req.body;
       
-      // For now, return a mock session - in production you'd create actual Stripe session
-      const mockSession = {
-        id: `cs_${Date.now()}`,
-        url: `/payment-confirmation?session_id=cs_${Date.now()}&service=${encodeURIComponent(serviceName)}`,
-        service: {
-          name: serviceName,
-          price: price,
-          description: description,
-          category: category
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ error: "Stripe is not configured. Please add STRIPE_SECRET_KEY to environment variables." });
+      }
+      
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2025-05-28.basil'
+      });
+      
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'cad',
+            product_data: {
+              name: serviceName,
+              description: description || '',
+            },
+            unit_amount: Math.round(price * 100), // Convert to cents
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `${req.headers.origin || 'http://localhost:5000'}/payment-confirmation?session_id={CHECKOUT_SESSION_ID}&service=${encodeURIComponent(serviceName)}`,
+        cancel_url: `${req.headers.origin || 'http://localhost:5000'}/services`,
+        metadata: {
+          category: category || 'service',
         }
-      };
+      });
 
-      res.json({ sessionId: mockSession.id, url: mockSession.url });
-    } catch (error) {
+      res.json({ sessionId: session.id, url: session.url });
+    } catch (error: any) {
       console.error("Create checkout session error:", error);
-      res.status(500).json({ error: "Failed to create checkout session" });
+      res.status(500).json({ error: error.message || "Failed to create checkout session" });
     }
   });
 
