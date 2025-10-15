@@ -202,7 +202,19 @@ export function registerRoutes(app: Express): void {
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
       const { username, password } = loginSchema.parse(req.body);
-      const user = await storage.getUserByUsername(username) || await storage.getUserByEmail(username);
+      
+      // Fetch user with all fields from database
+      const { sqlite } = await import('./db');
+      const user = sqlite.prepare(`
+        SELECT 
+          id, username, email, password, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE username = ? OR email = ?
+      `).get(username, username);
       
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
@@ -213,23 +225,22 @@ export function registerRoutes(app: Express): void {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
+      // Check if account is locked
+      if (user.accountLocked) {
+        return res.status(403).json({ error: "Account is locked. Please contact support." });
+      }
+
+      // Remove password from user object before storing in session
+      const { password: _, ...userWithoutPassword } = user;
+      
       (req.session as any).userId = user.id;
-      (req.session as any).user = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        isAdmin: user.isAdmin
-      };
+      (req.session as any).user = userWithoutPassword;
+
+      // Update last login timestamp
+      sqlite.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
 
       res.json({
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          isAdmin: user.isAdmin
-        }
+        user: userWithoutPassword
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -273,14 +284,17 @@ export function registerRoutes(app: Express): void {
         isAdmin ? 1 : 0
       );
 
-      // Auto-login the new user
-      const newUser = {
-        id: result.lastInsertRowid,
-        username,
-        email,
-        role: isAdmin ? 'admin' : 'user',
-        isAdmin
-      };
+      // Fetch the newly created user with all fields
+      const newUser = sqlite.prepare(`
+        SELECT 
+          id, username, email, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE id = ?
+      `).get(result.lastInsertRowid);
 
       (req.session as any).userId = newUser.id;
       (req.session as any).user = newUser;
@@ -313,18 +327,59 @@ export function registerRoutes(app: Express): void {
   });
 
   // Frontend compatibility routes (frontend expects these paths)
-  app.get("/api/user", (req: Request, res: Response) => {
-    const user = (req.session as any)?.user;
-    if (!user) {
+  app.get("/api/user", async (req: Request, res: Response) => {
+    const sessionUser = (req.session as any)?.user;
+    if (!sessionUser) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-    res.json(user); // Return user directly, not wrapped in {user}
+    
+    try {
+      // Fetch fresh user data from database to get latest roles/permissions
+      const { sqlite } = await import('./db');
+      const freshUser = sqlite.prepare(`
+        SELECT 
+          id, username, email, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE id = ?
+      `).get(sessionUser.id);
+      
+      if (!freshUser) {
+        // User was deleted, destroy session
+        req.session.destroy(() => {});
+        return res.status(401).json({ error: "User no longer exists" });
+      }
+      
+      // Update session with fresh data
+      (req.session as any).user = freshUser;
+      
+      res.json(freshUser); // Return fresh user data
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      // Fallback to cached session data if database fetch fails
+      res.json(sessionUser);
+    }
   });
 
   app.post("/api/login", async (req: Request, res: Response) => {
     try {
       const { username, password } = loginSchema.parse(req.body);
-      const user = await storage.getUserByUsername(username) || await storage.getUserByEmail(username);
+      
+      // Fetch user with all fields from database
+      const { sqlite } = await import('./db');
+      const user = sqlite.prepare(`
+        SELECT 
+          id, username, email, password, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE username = ? OR email = ?
+      `).get(username, username);
       
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
@@ -335,22 +390,21 @@ export function registerRoutes(app: Express): void {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      (req.session as any).userId = user.id;
-      (req.session as any).user = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        isAdmin: user.isAdmin
-      };
+      // Check if account is locked
+      if (user.accountLocked) {
+        return res.status(403).json({ error: "Account is locked. Please contact support." });
+      }
 
-      res.json({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        isAdmin: user.isAdmin
-      });
+      // Remove password from user object before storing in session
+      const { password: _, ...userWithoutPassword } = user;
+      
+      (req.session as any).userId = user.id;
+      (req.session as any).user = userWithoutPassword;
+
+      // Update last login timestamp
+      sqlite.prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').run(user.id);
+
+      res.json(userWithoutPassword);
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ error: "Login failed" });
@@ -393,14 +447,17 @@ export function registerRoutes(app: Express): void {
         isAdmin ? 1 : 0
       );
 
-      // Auto-login the new user
-      const newUser = {
-        id: result.lastInsertRowid,
-        username,
-        email,
-        role: isAdmin ? 'admin' : 'user',
-        isAdmin
-      };
+      // Fetch the newly created user with all fields
+      const newUser = sqlite.prepare(`
+        SELECT 
+          id, username, email, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE id = ?
+      `).get(result.lastInsertRowid);
 
       (req.session as any).userId = newUser.id;
       (req.session as any).user = newUser;
@@ -574,8 +631,26 @@ export function registerRoutes(app: Express): void {
       
       sqlite.prepare(query).run(...values);
       
-      // Return updated user
-      const updatedUser = sqlite.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+      // Return updated user with proper field mapping
+      const updatedUser = sqlite.prepare(`
+        SELECT 
+          id, username, email, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE id = ?
+      `).get(userId);
+      
+      // If admin is updating their own account OR updating the currently logged in user's session
+      // Update all active sessions for this user (in production, you'd use Redis/session store)
+      // For now, we update the session if the admin is updating themselves
+      const currentUser = (req.session as any)?.user;
+      if (currentUser && currentUser.id === userId) {
+        (req.session as any).user = updatedUser;
+      }
+      
       res.json(updatedUser);
     } catch (error) {
       console.error("Update user error:", error);
