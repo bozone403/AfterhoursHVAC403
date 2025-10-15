@@ -297,84 +297,94 @@ const Careers = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center bg-blue-100 border border-blue-200 rounded-full px-6 py-3 mb-6">
-            <Briefcase className="h-5 w-5 text-blue-700 mr-3" />
-            <span className="text-blue-800 text-lg font-bold">Careers</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
+      {/* Hero Header */}
+      <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-orange-500 text-white">
+        <div className="hvac-container py-24">
+          <div className="text-center">
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-3 mb-6">
+              <Briefcase className="h-5 w-5 mr-3" />
+              <span className="text-white text-lg font-bold">💼 Careers at AfterHours HVAC</span>
+            </div>
+            <h1 className="hvac-heading-xl mb-6">Join Our Growing Team</h1>
+            <p className="hvac-text-xl text-white/90 max-w-3xl mx-auto mb-8">
+              Build your career with Calgary's leading HVAC company. We offer competitive compensation, 
+              comprehensive benefits, and opportunities for professional growth in a supportive environment.
+            </p>
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">Join Our Growing Team</h1>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8">
-            Build your career with Calgary's leading HVAC company. We offer competitive compensation, 
-            comprehensive benefits, and opportunities for professional growth in a supportive environment.
-          </p>
         </div>
+      </div>
+
+      <div className="hvac-container py-16">
 
         {/* Company Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Why Work With Us?</h2>
+          <div className="text-center mb-10">
+            <h2 className="hvac-heading-lg mb-2">Why Work With Us?</h2>
+            <p className="hvac-text-lg text-gray-600">Join a team that values your growth and success</p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {companyBenefits.map((benefit, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex justify-center mb-4 text-blue-600">
+              <div key={index} className="hvac-card text-center group hover:shadow-2xl transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex justify-center mb-4 text-blue-600 group-hover:scale-110 transition-transform">
                     {benefit.icon}
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{benefit.title}</h3>
-                  <p className="text-gray-600 text-sm">{benefit.description}</p>
-                </CardContent>
-              </Card>
+                  <h3 className="hvac-heading-sm mb-2">{benefit.title}</h3>
+                  <p className="hvac-text-base text-gray-600">{benefit.description}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Open Positions */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-center mb-8">Current Openings</h2>
+          <div className="text-center mb-10">
+            <h2 className="hvac-heading-lg mb-2">Current Openings</h2>
+            <p className="hvac-text-lg text-gray-600">Find your perfect role with us</p>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {jobPositions.map((position) => (
-              <Card key={position.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
+              <div key={position.id} className="hvac-card hover:shadow-2xl transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
                     <div>
-                      <CardTitle className="text-xl font-bold text-gray-900">
+                      <h3 className="hvac-heading-md mb-1">
                         {position.title}
-                      </CardTitle>
-                      <CardDescription className="text-lg">
+                      </h3>
+                      <p className="hvac-text-base text-blue-600 font-semibold">
                         {position.department}
-                      </CardDescription>
+                      </p>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700">
+                    <Badge className="bg-gradient-to-r from-green-600 to-green-700 text-white">
                       {position.type}
                     </Badge>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                <div className="space-y-4">
                   <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
+                      <MapPin className="h-4 w-4 text-orange-500" />
                       {position.location}
                     </div>
                     <div className="flex items-center gap-1">
-                      <DollarSign className="h-4 w-4" />
+                      <DollarSign className="h-4 w-4 text-green-600" />
                       {position.salary}
                     </div>
                     <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
+                      <Clock className="h-4 w-4 text-blue-600" />
                       Posted {position.posted}
                     </div>
                   </div>
 
-                  <p className="text-gray-700">{position.description}</p>
+                  <p className="hvac-text-base text-gray-700">{position.description}</p>
 
                   <div>
-                    <h4 className="font-semibold mb-2">Key Requirements:</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                    <h4 className="font-bold text-gray-900 mb-2">Key Requirements:</h4>
+                    <ul className="text-sm text-gray-700 space-y-2">
                       {position.requirements.slice(0, 3).map((req, index) => (
                         <li key={index} className="flex items-start gap-2">
-                          <span className="text-blue-600 mt-1">•</span>
+                          <span className="text-blue-600 font-bold">✓</span>
                           {req}
                         </li>
                       ))}
@@ -382,13 +392,15 @@ const Careers = () => {
                   </div>
 
                   {expandedCard === position.id && (
-                    <div className="space-y-4 border-t pt-4 mt-4">
+                    <div className="space-y-4 border-t border-gray-200 pt-4 mt-4">
                       <div>
-                        <h4 className="font-semibold mb-2">Complete Requirements:</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
+                        <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                          <span>📋</span> Complete Requirements:
+                        </h4>
+                        <ul className="text-sm text-gray-700 space-y-2">
                           {position.requirements.map((req, index) => (
                             <li key={index} className="flex items-start gap-2">
-                              <span className="text-blue-600 mt-1">•</span>
+                              <span className="text-blue-600 font-bold">✓</span>
                               {req}
                             </li>
                           ))}
@@ -396,11 +408,13 @@ const Careers = () => {
                       </div>
                       
                       <div>
-                        <h4 className="font-semibold mb-2">Benefits & Perks:</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
+                        <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                          <span>🎁</span> Benefits & Perks:
+                        </h4>
+                        <ul className="text-sm text-gray-700 space-y-2">
                           {position.benefits.map((benefit, index) => (
                             <li key={index} className="flex items-start gap-2">
-                              <span className="text-green-600 mt-1">•</span>
+                              <span className="text-green-600 font-bold">✓</span>
                               {benefit}
                             </li>
                           ))}
@@ -411,7 +425,7 @@ const Careers = () => {
 
                   <div className="flex gap-2">
                     <Button 
-                      className="flex-1"
+                      className="flex-1 hvac-button-primary"
                       onClick={() => {
                         setSelectedPosition(position.title);
                         setShowApplication(true);
@@ -425,6 +439,7 @@ const Careers = () => {
                     </Button>
                     <Button 
                       variant="outline"
+                      className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50"
                       onClick={() => {
                         setExpandedCard(expandedCard === position.id ? null : position.id);
                       }}
@@ -432,25 +447,24 @@ const Careers = () => {
                       {expandedCard === position.id ? "Hide Details" : "View Details"}
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+            </div>
             ))}
           </div>
         </div>
 
         {/* Application Form */}
         {showApplication && (
-          <Card id="application-form" className="max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+          <div id="application-form" className="hvac-card max-w-2xl mx-auto">
+            <div className="p-6">
+              <h3 className="hvac-heading-md mb-2 flex items-center gap-2">
+                <FileText className="h-6 w-6 text-blue-600" />
                 Job Application
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="hvac-text-base text-gray-600 mb-6">
                 {selectedPosition ? `Applying for: ${selectedPosition}` : "Complete the form below to apply"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -636,8 +650,8 @@ const Careers = () => {
                   </div>
                 </form>
               </Form>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Company Culture */}

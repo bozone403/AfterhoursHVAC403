@@ -50,27 +50,30 @@ const BlogIndex = () => {
       </Helmet>
       
       {/* Page Header */}
-      <div className="relative pt-24 pb-10 bg-dark">
-        <div className="container mx-auto px-4">
+      <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-orange-500 text-white">
+        <div className="hvac-container py-24">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold font-header mb-4">HVAC <span className="text-primary">Knowledge Hub</span></h1>
-            <p className="text-lightgray max-w-3xl mx-auto">Expert tips, insights, and guides to help you make informed decisions about your heating and cooling systems.</p>
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-3 mb-6">
+              <span className="text-white text-lg font-bold">📚 HVAC Knowledge Hub</span>
+            </div>
+            <h1 className="hvac-heading-xl mb-6">Expert HVAC Insights & Tips</h1>
+            <p className="hvac-text-xl text-white/90 max-w-3xl mx-auto">Stay informed with the latest HVAC maintenance tips, industry trends, and expert advice from Calgary's trusted heating and cooling professionals.</p>
           </div>
         </div>
       </div>
       
       {/* Blog Grid */}
-      <section className="bg-dark py-16">
-        <div className="container mx-auto px-4">
+      <section className="bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 py-16">
+        <div className="hvac-container">
           {isLoading ? (
-            <div className="text-center text-lightgray">
-              <i className="fas fa-spinner fa-spin text-2xl mb-4"></i>
-              <p>Loading blog posts...</p>
+            <div className="text-center text-gray-600">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="hvac-text-lg">Loading blog posts...</p>
             </div>
           ) : error ? (
-            <div className="text-center text-lightgray">
-              <i className="fas fa-exclamation-triangle text-2xl mb-4 text-yellow-500"></i>
-              <p>Unable to load blog posts. Showing cached content.</p>
+            <div className="text-center text-gray-600">
+              <div className="text-4xl mb-4">⚠️</div>
+              <p className="hvac-text-lg">Unable to load blog posts. Showing cached content.</p>
             </div>
           ) : null}
           
@@ -84,38 +87,39 @@ const BlogIndex = () => {
               const tags = post.tags ? post.tags.split(',').map((tag: string) => tag.trim()) : [];
               
               return (
-                <div key={post.id} className="bg-darkgray rounded-lg overflow-hidden border border-gray-700 transition-transform hover:transform hover:scale-105">
+                <div key={post.id} className="hvac-card group hover:shadow-2xl transition-all duration-300 overflow-hidden">
                   <Link href={`/blog/${post.slug}`}>
-                    <a>
+                    <a className="block relative overflow-hidden">
                       <img 
                         src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500&q=80"
                         alt={post.title}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </a>
                   </Link>
                   <div className="p-6">
-                    <div className="flex items-center space-x-2 text-sm text-lightgray mb-3">
-                      <span><i className="far fa-calendar-alt mr-1"></i> {postDate}</span>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
+                      <span>📅 {postDate}</span>
                       <span>•</span>
-                      <span><i className="far fa-user mr-1"></i> {post.author}</span>
+                      <span>✍️ {post.author}</span>
                     </div>
-                    <h2 className="text-xl font-bold font-header mb-3">
+                    <h2 className="hvac-heading-sm mb-3">
                       <Link href={`/blog/${post.slug}`}>
-                        <a className="hover:text-primary transition-colors">{post.title}</a>
+                        <a className="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-600 hover:to-orange-500 transition-all">{post.title}</a>
                       </Link>
                     </h2>
-                    <p className="text-lightgray mb-4">{post.excerpt}</p>
+                    <p className="hvac-text-base text-gray-700 mb-4">{post.excerpt}</p>
                     {tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-4">
                         {tags.map((tag: string, index: number) => (
-                          <span key={index} className="text-xs bg-dark rounded-full px-3 py-1">{tag}</span>
+                          <span key={index} className="text-xs bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 rounded-full px-3 py-1 font-medium">{tag}</span>
                         ))}
                       </div>
                     )}
                     <Link href={`/blog/${post.slug}`}>
-                      <a className="inline-flex items-center text-secondary hover:text-primary transition-colors font-medium">
-                        Read Full Article <i className="fas fa-arrow-right ml-2"></i>
+                      <a className="inline-flex items-center text-blue-600 hover:text-orange-500 transition-colors font-semibold group">
+                        Read Article <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                       </a>
                     </Link>
                   </div>
@@ -125,60 +129,62 @@ const BlogIndex = () => {
           </div>
           
           {blogPosts.length === 0 && !isLoading && (
-            <div className="text-center text-lightgray py-12">
-              <i className="fas fa-newspaper text-4xl mb-4 opacity-50"></i>
-              <h3 className="text-xl font-semibold mb-2">No Blog Posts Yet</h3>
-              <p>Check back soon for expert HVAC tips and insights!</p>
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">📰</div>
+              <h3 className="hvac-heading-md mb-2">No Blog Posts Yet</h3>
+              <p className="hvac-text-lg text-gray-600">Check back soon for expert HVAC tips and insights!</p>
             </div>
           )}
         </div>
       </section>
       
       {/* Newsletter Signup */}
-      <section className="bg-gradient-to-r from-darkgray to-dark py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto bg-darkgray rounded-lg p-8 border border-gray-700">
+      <section className="bg-gradient-to-r from-blue-600 to-orange-500 py-16">
+        <div className="hvac-container">
+          <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-lg rounded-2xl p-10 border border-white/20 shadow-2xl">
             <div className="text-center mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold font-header mb-2">Stay Updated on HVAC Trends</h2>
-              <p className="text-lightgray">Subscribe to our newsletter for seasonal maintenance tips, industry news, and special offers.</p>
+              <div className="text-4xl mb-4">📧</div>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-3">Stay Updated on HVAC Trends</h2>
+              <p className="text-white/90 text-lg">Subscribe to our newsletter for seasonal maintenance tips, industry news, and special offers.</p>
             </div>
             
             <form className="flex flex-col sm:flex-row gap-4">
               <input 
                 type="email" 
                 placeholder="Your email address" 
-                className="flex-1 bg-dark border border-gray-700 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                className="flex-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl py-4 px-6 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/30"
               />
               <button 
                 type="submit"
-                className="bg-primary hover:bg-opacity-80 text-white py-3 px-6 rounded-md transition-all font-semibold"
+                className="bg-white text-blue-600 hover:bg-blue-50 py-4 px-8 rounded-xl transition-all font-bold shadow-lg hover:shadow-xl"
               >
                 Subscribe
               </button>
             </form>
-            <p className="text-xs text-center text-lightgray mt-4">
-              We respect your privacy. Unsubscribe at any time.
+            <p className="text-xs text-center text-white/70 mt-4">
+              🔒 We respect your privacy. Unsubscribe at any time.
             </p>
           </div>
         </div>
       </section>
       
       {/* Popular Topics */}
-      <section className="bg-dark py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold font-header">Popular Topics</h2>
+      <section className="bg-white py-16">
+        <div className="hvac-container">
+          <div className="text-center mb-10">
+            <h2 className="hvac-heading-lg mb-2">Popular Topics</h2>
+            <p className="hvac-text-lg text-gray-600">Explore by category</p>
           </div>
           
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Furnaces</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Air Conditioning</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Maintenance</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Energy Efficiency</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Commercial HVAC</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Troubleshooting</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Indoor Air Quality</a>
-            <a href="#" className="bg-darkgray hover:bg-gray-700 text-white px-4 py-2 rounded-full transition-colors">Seasonal Tips</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg transition-all">🔥 Furnaces</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-cyan-600 to-cyan-700 text-white hover:shadow-lg transition-all">❄️ Air Conditioning</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-green-600 to-green-700 text-white hover:shadow-lg transition-all">🔧 Maintenance</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:shadow-lg transition-all">⚡ Energy Efficiency</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:shadow-lg transition-all">🏢 Commercial HVAC</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg transition-all">🔍 Troubleshooting</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:shadow-lg transition-all">💨 Indoor Air Quality</a>
+            <a href="#" className="hvac-badge bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:shadow-lg transition-all">🍂 Seasonal Tips</a>
           </div>
         </div>
       </section>

@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Users, UserPlus, Settings, Shield, AlertTriangle, Eye, Edit, Trash2, RefreshCw, Lock, Unlock, FileText, Calendar, DollarSign, Activity, UsersRound } from "lucide-react";
+import { Users, UserPlus, Settings, Shield, AlertTriangle, Eye, Edit, Trash2, RefreshCw, Lock, Unlock, FileText, Calendar, DollarSign, Activity, UsersRound, BookOpen, Plus } from "lucide-react";
 import { Link } from "wouter";
 
 interface User {
@@ -146,6 +146,12 @@ export default function AdminDashboardEnhanced() {
   // Fetch team members
   const { data: teamMembers = [], isLoading: teamLoading, refetch: refetchTeam } = useQuery<TeamMember[]>({
     queryKey: ["/api/team"],
+    enabled: true
+  });
+
+  // Fetch blog posts
+  const { data: blogPosts = [], isLoading: blogLoading } = useQuery<any[]>({
+    queryKey: ["/api/blog/posts"],
     enabled: true
   });
 
@@ -523,6 +529,84 @@ export default function AdminDashboardEnhanced() {
     });
   };
 
+  // Blog post mutations
+  const [showBlogDialog, setShowBlogDialog] = useState(false);
+  const [blogForm, setBlogForm] = useState({
+    title: '',
+    content: '',
+    excerpt: '',
+    author: '',
+    category: '',
+    published: true
+  });
+
+  const createBlogMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/admin/blog/posts", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Blog Post Created",
+        description: "New blog post has been published successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/blog/posts"] });
+      setShowBlogDialog(false);
+      setBlogForm({
+        title: '',
+        content: '',
+        excerpt: '',
+        author: '',
+        category: '',
+        published: true
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Creation Failed",
+        description: error.message || "Failed to create blog post.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/admin/blog/posts/${id}`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Blog Post Deleted",
+        description: "Blog post has been deleted successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/blog/posts"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete blog post.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreateBlog = () => {
+    if (!blogForm.title || !blogForm.content) {
+      toast({
+        title: "Validation Error",
+        description: "Title and content are required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    createBlogMutation.mutate(blogForm);
+  };
+
+  const deleteBlogPost = (id: number) => {
+    if (confirm("Are you sure you want to delete this blog post?")) {
+      deleteBlogMutation.mutate(id);
+    }
+  };
+
   const getUserTypeColor = (userType: string) => {
     switch (userType) {
       case 'admin': return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg';
@@ -608,9 +692,10 @@ export default function AdminDashboardEnhanced() {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="hvac-card p-2 bg-gradient-to-r from-blue-50 to-orange-50">
+          <TabsList className="hvac-card p-2 bg-gradient-to-r from-blue-50 to-orange-50 flex-wrap">
             <TabsTrigger value="users" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">User Management</TabsTrigger>
             <TabsTrigger value="team" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Team Members</TabsTrigger>
+            <TabsTrigger value="blog" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Blog Posts</TabsTrigger>
             <TabsTrigger value="applications" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Job Applications</TabsTrigger>
             <TabsTrigger value="bookings" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Service Bookings</TabsTrigger>
             <TabsTrigger value="contacts" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Contact Messages</TabsTrigger>
@@ -938,6 +1023,167 @@ export default function AdminDashboardEnhanced() {
               <p className="text-sm text-gray-500 mt-4">
                 Manage Jordan, Derek, Earl and add new team members
               </p>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Blog Posts Tab */}
+        <TabsContent value="blog" className="space-y-4">
+          <div className="hvac-card">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="hvac-heading-md mb-2">Blog Post Management</h2>
+                <p className="hvac-text-base text-gray-600">Create, edit, and manage blog posts</p>
+              </div>
+              <Dialog open={showBlogDialog} onOpenChange={setShowBlogDialog}>
+                <DialogTrigger asChild>
+                  <Button className="hvac-button-primary">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Blog Post
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Create New Blog Post</DialogTitle>
+                    <DialogDescription>
+                      Write and publish a new blog post about HVAC tips, news, or updates
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div>
+                      <Label htmlFor="blog-title">Title</Label>
+                      <Input
+                        id="blog-title"
+                        value={blogForm.title}
+                        onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
+                        placeholder="e.g., Winter HVAC Maintenance Tips"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="blog-author">Author</Label>
+                      <Input
+                        id="blog-author"
+                        value={blogForm.author}
+                        onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })}
+                        placeholder="e.g., Jordan Boisclair"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="blog-category">Category</Label>
+                      <Select value={blogForm.category} onValueChange={(value) => setBlogForm({ ...blogForm, category: value })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="maintenance">Maintenance</SelectItem>
+                          <SelectItem value="tips">Tips & Advice</SelectItem>
+                          <SelectItem value="news">Company News</SelectItem>
+                          <SelectItem value="products">Products</SelectItem>
+                          <SelectItem value="seasonal">Seasonal</SelectItem>
+                          <SelectItem value="commercial">Commercial</SelectItem>
+                          <SelectItem value="residential">Residential</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="blog-excerpt">Excerpt (Short Summary)</Label>
+                      <Textarea
+                        id="blog-excerpt"
+                        value={blogForm.excerpt}
+                        onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                        placeholder="Brief summary for preview cards..."
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="blog-content">Content (Full Article)</Label>
+                      <Textarea
+                        id="blog-content"
+                        value={blogForm.content}
+                        onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                        placeholder="Write your full blog post content here..."
+                        rows={12}
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="blog-published"
+                        checked={blogForm.published}
+                        onCheckedChange={(checked) => setBlogForm({ ...blogForm, published: checked })}
+                      />
+                      <Label htmlFor="blog-published">Publish immediately</Label>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowBlogDialog(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleCreateBlog}
+                      disabled={createBlogMutation.isPending}
+                    >
+                      {createBlogMutation.isPending ? "Creating..." : "Create Post"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <div>
+              {blogLoading ? (
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {blogPosts && blogPosts.length > 0 ? (
+                    blogPosts.map((post: any) => (
+                      <div key={post.id} className="flex items-start justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <BookOpen className="h-5 w-5 text-blue-600" />
+                            <h4 className="font-semibold text-lg">{post.title}</h4>
+                            {post.category && (
+                              <Badge className="bg-blue-600 text-white">{post.category}</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            By: {post.author || 'Anonymous'} • {new Date(post.createdAt || post.date).toLocaleDateString()}
+                          </p>
+                          <p className="text-sm text-gray-700">{post.excerpt || post.content?.substring(0, 150)}...</p>
+                          <div className="flex gap-2 mt-2">
+                            <Badge variant={post.published ? "default" : "secondary"}>
+                              {post.published ? "Published" : "Draft"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(`/blog/${post.slug || post.id}`, '_blank')}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteBlogPost(post.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600 mb-4">No blog posts yet</p>
+                      <p className="text-sm text-gray-500">Create your first blog post to share HVAC tips and updates</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
