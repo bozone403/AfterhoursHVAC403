@@ -13,7 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Users, UserPlus, Settings, Shield, AlertTriangle, Eye, Edit, Trash2, RefreshCw, Lock, Unlock, FileText, Calendar, DollarSign, Activity } from "lucide-react";
+import { Users, UserPlus, Settings, Shield, AlertTriangle, Eye, Edit, Trash2, RefreshCw, Lock, Unlock, FileText, Calendar, DollarSign, Activity, UsersRound } from "lucide-react";
+import { Link } from "wouter";
 
 interface User {
   id: number;
@@ -564,6 +565,12 @@ export default function AdminDashboardEnhanced() {
               <p className="hvac-text-lg text-gray-600">Comprehensive user and system management for HVAC professionals</p>
             </div>
             <div className="flex gap-2">
+              <Button asChild variant="outline">
+                <Link href="/admin/team">
+                  <UsersRound className="h-4 w-4 mr-2" />
+                  Manage Team
+                </Link>
+              </Button>
               <Button onClick={() => refetchUsers()} className="hvac-button-primary">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh

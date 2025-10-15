@@ -68,6 +68,7 @@ import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import ForumPage from "@/pages/forum-interactive";
 import AdminDashboard from "@/pages/admin-dashboard-enhanced";
+import AdminTeamManagement from "@/pages/admin-team-management";
 import UserSettings from "@/pages/user-settings";
 import CustomerDashboard from "@/pages/customer-dashboard";
 import ResidentialServices from "@/pages/shop/residential";
@@ -196,6 +197,7 @@ function Router() {
         {/* Admin-only routes - only JordanBoz */}
         <ProtectedRoute path="/admin" component={AdminDashboard} adminOnly={true} />
         <ProtectedRoute path="/admin/photos" component={AdminPhotos} adminOnly={true} />
+        <ProtectedRoute path="/admin/team" component={AdminTeamManagement} adminOnly={true} />
         
         {/* 404 fallback */}
         <Route component={NotFound} />
