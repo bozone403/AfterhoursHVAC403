@@ -105,18 +105,42 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Social Media */}
+            {/* Social Media - Connect with us */}
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110">
+              <a 
+                href="https://facebook.com/afterhourshvac" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110"
+                aria-label="Visit our Facebook page"
+              >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110">
+              <a 
+                href="https://twitter.com/afterhourshvac" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110"
+                aria-label="Follow us on Twitter"
+              >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110">
+              <a 
+                href="https://instagram.com/afterhourshvac" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110"
+                aria-label="Follow us on Instagram"
+              >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110">
+              <a 
+                href="https://linkedin.com/company/afterhours-hvac" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-amber-500 transition-all hover:scale-110"
+                aria-label="Connect with us on LinkedIn"
+              >
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>

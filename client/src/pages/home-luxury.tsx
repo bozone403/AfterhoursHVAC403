@@ -32,7 +32,7 @@ const HomeLuxury = () => {
       </Helmet>
 
       {/* Hero Section - Premium Gradient */}
-      <section className="relative min-h-[85vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+      <section className="relative min-h-[85vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden pt-20">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -48,7 +48,7 @@ const HomeLuxury = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 container mx-auto px-6 pt-24 pb-16">
+        <div className="relative z-10 container mx-auto px-6 pt-8 pb-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             
             {/* Left Content */}
@@ -136,7 +136,7 @@ const HomeLuxury = () => {
             </div>
 
             {/* Right: Premium Feature Cards */}
-            <div className="space-y-4 relative z-10 mt-8 lg:mt-0">
+            <div className="space-y-6 relative z-20 mt-8 lg:mt-0">
               <PremiumFeatureCard 
                 icon={<Shield className="w-8 h-8" />}
                 title="Certified Excellence"
@@ -377,7 +377,7 @@ const HomeLuxury = () => {
 
 // Premium Feature Card
 const PremiumFeatureCard = ({ icon, title, description, accent }: any) => (
-  <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all hover:scale-105 cursor-pointer">
+  <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all hover:scale-105 cursor-pointer relative z-20">
     <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${accent} text-white mb-4`}>
       {icon}
     </div>

@@ -273,6 +273,61 @@ async function initializeDatabase() {
     )
   `);
 
+  // Corporate inquiries table
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS corporate_inquiries (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      company_name TEXT NOT NULL,
+      contact_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      industry TEXT,
+      projected_users INTEGER,
+      message TEXT,
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      admin_notes TEXT
+    )
+  `);
+
+  // Gallery images table
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS gallery_images (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT,
+      image_url TEXT NOT NULL,
+      category TEXT DEFAULT 'general',
+      project_type TEXT,
+      location TEXT,
+      date_completed TEXT,
+      featured INTEGER DEFAULT 0,
+      is_active INTEGER DEFAULT 1,
+      display_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Service callout requests table
+  sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS service_callouts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_name TEXT NOT NULL,
+      customer_email TEXT NOT NULL,
+      customer_phone TEXT NOT NULL,
+      service_address TEXT NOT NULL,
+      service_description TEXT NOT NULL,
+      urgency TEXT DEFAULT 'normal',
+      amount REAL,
+      payment_status TEXT DEFAULT 'pending',
+      stripe_payment_intent_id TEXT,
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      admin_notes TEXT
+    )
+  `);
+
   console.log('Tables created successfully!');
 
   // Create admin users

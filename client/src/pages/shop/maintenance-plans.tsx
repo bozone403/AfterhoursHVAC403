@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Settings, Shield, Clock, Wrench, CheckCircle, Star, Phone, Calendar, ArrowRight, Award, Sparkles, Zap, ShoppingCart } from 'lucide-react';
+import { Settings, Shield, Clock, Wrench, CheckCircle, Star, Phone, Calendar, Award, Sparkles, ShoppingCart } from 'lucide-react';
 import { Link } from 'wouter';
 import { ServiceBookingModal } from '@/components/ServiceBookingModal';
 
 const MaintenancePlansShop = () => {
-  const [isAnnual, setIsAnnual] = useState(true);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
+  const isAnnual = true;
 
   const handleBookService = (plan: any) => {
     setSelectedService({
@@ -160,23 +159,6 @@ const MaintenancePlansShop = () => {
     }
   ];
 
-  const addOns = [
-    {
-      name: "Duct Cleaning Service",
-      price: 3199,
-      description: "Professional ductwork cleaning and sanitization"
-    },
-    {
-      name: "Indoor Air Quality Package",
-      price: 2399,
-      description: "UV lights, air purification, and humidity control"
-    },
-    {
-      name: "Smart Thermostat Upgrade",
-      price: 479,
-      description: "Professional installation of WiFi-enabled smart thermostat"
-    }
-  ];
 
   return (
     <>
@@ -223,11 +205,14 @@ const MaintenancePlansShop = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button 
                 className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
-                onClick={() => handleBookService(plan)}
-                data-testid={`button-subscribe-${plan.id}`}
+                onClick={() => {
+                  const element = document.getElementById('maintenance-plans');
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                data-testid="button-view-plans"
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Subscribe Now
+                View Plans
               </Button>
               <Button 
                 size="lg" 

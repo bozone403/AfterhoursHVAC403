@@ -389,16 +389,38 @@ const CommercialVsResidentialHVAC = () => {
               <div className="mt-8 flex items-center">
                 <span className="mr-4 text-lightgray">Share:</span>
                 <div className="flex space-x-3">
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="https://www.facebook.com/sharer/sharer.php?u=https://afterhourshvac.ca/blog/commercial-vs-residential-hvac" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share on Facebook"
+                  >
                     <i className="fab fa-facebook-f text-lg"></i>
                   </a>
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="https://twitter.com/intent/tweet?url=https://afterhourshvac.ca/blog/commercial-vs-residential-hvac&text=Commercial%20vs%20Residential%20HVAC" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share on Twitter"
+                  >
                     <i className="fab fa-twitter text-lg"></i>
                   </a>
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="https://www.linkedin.com/sharing/share-offsite/?url=https://afterhourshvac.ca/blog/commercial-vs-residential-hvac" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share on LinkedIn"
+                  >
                     <i className="fab fa-linkedin-in text-lg"></i>
                   </a>
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="mailto:?subject=Check%20out%20this%20article&body=I%20thought%20you%20might%20find%20this%20interesting:%20https://afterhourshvac.ca/blog/commercial-vs-residential-hvac" 
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share via email"
+                  >
                     <i className="far fa-envelope text-lg"></i>
                   </a>
                 </div>
@@ -426,31 +448,8 @@ const CommercialVsResidentialHVAC = () => {
                       <a className="hover:text-primary transition-colors">How to Prepare Your Furnace for Winter</a>
                     </Link>
                   </h3>
-                  <p className="text-sm text-lightgray mb-2">Essential maintenance steps to ensure your heating system runs efficiently throughout winter.</p>
+                  <p className="text-sm text-lightgray mb-2">Essential maintenance steps to ensure your furnace runs efficiently all winter long.</p>
                   <Link href="/blog/prepare-furnace-winter">
-                    <a className="text-secondary hover:text-primary text-sm">Read More →</a>
-                  </Link>
-                </div>
-              </div>
-              
-              <div className="bg-darkgray rounded-lg overflow-hidden border border-gray-700">
-                <Link href="#">
-                  <a>
-                    <img 
-                      src="https://pixabay.com/get/gfc5b5e2c14d5c16a0f6fc9d12dc3cd2fcb4ae1c04b42bc686d5f0fdf5e3e6e40ee4dc68c91d9c5c9a1e0c41f03b65cd2f3fa2a4a95ecb1f6eee4d64c5e1089bb_1280.jpg" 
-                      alt="Energy efficiency label on HVAC equipment" 
-                      className="w-full h-40 object-cover"
-                    />
-                  </a>
-                </Link>
-                <div className="p-4">
-                  <h3 className="font-bold mb-2">
-                    <Link href="#">
-                      <a className="hover:text-primary transition-colors">Understanding HVAC Energy Efficiency Ratings</a>
-                    </Link>
-                  </h3>
-                  <p className="text-sm text-lightgray mb-2">Decode SEER, AFUE, HSPF and other efficiency ratings for informed decisions.</p>
-                  <Link href="#">
                     <a className="text-secondary hover:text-primary text-sm">Read More →</a>
                   </Link>
                 </div>

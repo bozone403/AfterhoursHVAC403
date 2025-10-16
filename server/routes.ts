@@ -887,6 +887,29 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  // Customer endpoint - get their own service requests
+  app.get("/api/service-requests", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      const { sqlite } = await import('./db');
+      const requests = sqlite.prepare(`
+        SELECT * FROM service_requests 
+        WHERE user_id = ? OR email = ?
+        ORDER BY created_at DESC
+      `).all(user.id, user.email);
+      
+      res.json(requests);
+    } catch (error) {
+      console.error("Get service requests error:", error);
+      res.status(500).json({ error: "Failed to get service requests" });
+    }
+  });
+
+  // Admin endpoint - get all service requests
   app.get("/api/admin/service-requests", async (req: Request, res: Response) => {
     try {
       const user = (req.session as any)?.user;
@@ -1116,6 +1139,34 @@ export function registerRoutes(app: Express): void {
     } catch (error: any) {
       console.error("Create subscription error:", error);
       res.status(500).json({ error: error.message || "Failed to create subscription" });
+    }
+  });
+
+  // Customer endpoint - get their own quotes
+  app.get("/api/quotes", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      const { sqlite } = await import('./db');
+      // Check if quotes table exists, if not return empty array
+      try {
+        const quotes = sqlite.prepare(`
+          SELECT * FROM quotes 
+          WHERE user_id = ? OR email = ?
+          ORDER BY created_at DESC
+        `).all(user.id, user.email);
+        res.json(quotes);
+      } catch (dbError) {
+        // Table might not exist yet
+        console.log("Quotes table may not exist yet:", dbError);
+        res.json([]);
+      }
+    } catch (error) {
+      console.error("Get quotes error:", error);
+      res.status(500).json({ error: "Failed to get quotes" });
     }
   });
 
@@ -1570,6 +1621,261 @@ export function registerRoutes(app: Express): void {
     } catch (error) {
       console.error("Delete post error:", error);
       res.status(500).json({ error: "Failed to delete post" });
+    }
+  });
+
+  // Pro membership activation (CRITICAL - missing endpoint)
+  app.post("/api/activate-pro", async (req: Request, res: Response) => {
+    try {
+      const { paymentIntentId } = req.body;
+      const user = (req.session as any)?.user;
+      
+      if (!user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      console.log(`Activating Pro access for user ${user.id} (${user.email}) - Payment Intent: ${paymentIntentId}`);
+      
+      // Update user to have pro access
+      const { sqlite } = await import('./db');
+      sqlite.prepare(`
+        UPDATE users 
+        SET has_pro = 1, 
+            has_pro_access = 1, 
+            pro_access_granted_at = CURRENT_TIMESTAMP,
+            membership_type = 'pro'
+        WHERE id = ?
+      `).run(user.id);
+      
+      // Update session with new pro status
+      const updatedUser = sqlite.prepare(`
+        SELECT 
+          id, username, email, first_name as firstName, last_name as lastName,
+          phone, role, user_type as userType, is_admin as isAdmin,
+          has_pro_access as hasProAccess, has_pro as hasPro,
+          membership_type as membershipType,
+          account_locked as accountLocked, created_at as createdAt,
+          last_login as lastLogin
+        FROM users 
+        WHERE id = ?
+      `).get(user.id);
+      
+      (req.session as any).user = updatedUser;
+      
+      console.log(`✅ Pro access activated successfully for user ${user.id}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Pro access activated successfully",
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error("Pro activation error:", error);
+      res.status(500).json({ error: "Failed to activate pro access" });
+    }
+  });
+
+  // Corporate inquiry endpoints
+  app.post("/api/corporate-inquiry", async (req: Request, res: Response) => {
+    try {
+      const { companyName, contactName, email, phone, industry, projectedUsers, message } = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO corporate_inquiries (
+          company_name, contact_name, email, phone, industry, 
+          projected_users, message, created_at, status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 'new')
+      `).run(
+        companyName || '',
+        contactName || '',
+        email || '',
+        phone || '',
+        industry || '',
+        projectedUsers || 0,
+        message || ''
+      );
+
+      console.log(`✅ Corporate inquiry saved: ${companyName} (${email})`);
+      res.json({ id: result.lastInsertRowid, message: "Corporate inquiry submitted successfully" });
+    } catch (error) {
+      console.error("Corporate inquiry error:", error);
+      res.status(500).json({ error: "Failed to submit corporate inquiry" });
+    }
+  });
+
+  app.post("/api/create-corporate-subscription", async (req: Request, res: Response) => {
+    try {
+      const { companyName, contactEmail, maxUsers } = req.body;
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ error: "Stripe is not configured" });
+      }
+      
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2025-05-28.basil'
+      });
+
+      // Calculate corporate pricing (example: $49 per user)
+      const pricePerUser = 49;
+      const totalAmount = (maxUsers || 1) * pricePerUser;
+      
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(totalAmount * 100),
+        currency: 'cad',
+        description: `AfterHours HVAC - Corporate Membership for ${companyName}`,
+        metadata: {
+          companyName,
+          contactEmail,
+          maxUsers: maxUsers.toString(),
+          subscriptionType: 'corporate'
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      console.log(`✅ Corporate subscription created: ${companyName} - ${maxUsers} users`);
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        amount: totalAmount
+      });
+    } catch (error: any) {
+      console.error("Create corporate subscription error:", error);
+      res.status(500).json({ error: error.message || "Failed to create corporate subscription" });
+    }
+  });
+
+  app.get("/api/admin/corporate-inquiries", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const inquiries = sqlite.prepare('SELECT * FROM corporate_inquiries ORDER BY created_at DESC').all();
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Get corporate inquiries error:", error);
+      res.status(500).json({ error: "Failed to get corporate inquiries" });
+    }
+  });
+
+  // Gallery management endpoints
+  app.post("/api/gallery", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { title, description, imageUrl, category, projectType, location, dateCompleted, featured } = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO gallery_images (
+          title, description, image_url, category, project_type, location, 
+          date_completed, featured, is_active, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `).run(
+        title || '',
+        description || '',
+        imageUrl || '',
+        category || 'general',
+        projectType || '',
+        location || '',
+        dateCompleted || '',
+        featured ? 1 : 0
+      );
+
+      console.log(`✅ Gallery image added: ${title}`);
+      res.json({ id: result.lastInsertRowid, message: "Gallery image added successfully" });
+    } catch (error) {
+      console.error("Add gallery image error:", error);
+      res.status(500).json({ error: "Failed to add gallery image" });
+    }
+  });
+
+  app.get("/api/gallery", async (req: Request, res: Response) => {
+    try {
+      const { sqlite } = await import('./db');
+      const images = sqlite.prepare(`
+        SELECT * FROM gallery_images 
+        WHERE is_active = 1 
+        ORDER BY featured DESC, display_order ASC, created_at DESC
+      `).all();
+      res.json(images);
+    } catch (error) {
+      console.error("Get gallery images error:", error);
+      res.status(500).json({ error: "Failed to get gallery images" });
+    }
+  });
+
+  app.delete("/api/gallery/:id", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { sqlite } = await import('./db');
+      sqlite.prepare('UPDATE gallery_images SET is_active = 0 WHERE id = ?').run(id);
+      
+      console.log(`✅ Gallery image deleted: ${id}`);
+      res.json({ message: "Gallery image deleted successfully" });
+    } catch (error) {
+      console.error("Delete gallery image error:", error);
+      res.status(500).json({ error: "Failed to delete gallery image" });
+    }
+  });
+
+  // Service callout endpoint
+  app.post("/api/service-callout", async (req: Request, res: Response) => {
+    try {
+      const { customerName, customerEmail, customerPhone, serviceAddress, serviceDescription, urgency, amount, stripePaymentIntentId } = req.body;
+      const { sqlite } = await import('./db');
+      
+      const result = sqlite.prepare(`
+        INSERT INTO service_callouts (
+          customer_name, customer_email, customer_phone, service_address, 
+          service_description, urgency, amount, stripe_payment_intent_id, 
+          payment_status, status, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'new', CURRENT_TIMESTAMP)
+      `).run(
+        customerName || '',
+        customerEmail || '',
+        customerPhone || '',
+        serviceAddress || '',
+        serviceDescription || '',
+        urgency || 'normal',
+        amount || 0,
+        stripePaymentIntentId || null
+      );
+
+      console.log(`✅ Service callout saved: ${customerName} at ${serviceAddress}`);
+      res.json({ id: result.lastInsertRowid, message: "Service callout request submitted successfully" });
+    } catch (error) {
+      console.error("Service callout error:", error);
+      res.status(500).json({ error: "Failed to submit service callout request" });
+    }
+  });
+
+  app.get("/api/admin/service-callouts", async (req: Request, res: Response) => {
+    try {
+      const user = (req.session as any)?.user;
+      if (!user || !user.isAdmin) {
+        return res.status(401).json({ error: "Admin access required" });
+      }
+
+      const { sqlite } = await import('./db');
+      const callouts = sqlite.prepare('SELECT * FROM service_callouts ORDER BY created_at DESC').all();
+      res.json(callouts);
+    } catch (error) {
+      console.error("Get service callouts error:", error);
+      res.status(500).json({ error: "Failed to get service callouts" });
     }
   });
 

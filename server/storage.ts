@@ -559,27 +559,6 @@ export class DatabaseStorage implements IStorage {
       console.error(error);
       throw error;
     }
-        userId: forumTopics.userId,
-        title: forumTopics.title,
-        content: forumTopics.content,
-        slug: forumTopics.slug,
-        displayName: forumTopics.displayName,
-        views: forumTopics.views,
-        isPinned: forumTopics.isPinned,
-        isLocked: forumTopics.isLocked,
-        createdAt: forumTopics.createdAt,
-        updatedAt: forumTopics.updatedAt,
-        username: users.username
-      })
-      .from(forumTopics)
-      .leftJoin(users, eq(forumTopics.userId, users.id))
-      .where(query)
-      .orderBy(desc(forumTopics.isPinned), desc(forumTopics.createdAt));
-    
-    return results.map(result => ({
-      ...result,
-      username: result.displayName || result.username || 'Unknown User'
-    }));
   }
   
   async getForumPosts(topicId?: number): Promise<(ForumPost & { username: string })[]> {
@@ -1144,14 +1123,6 @@ export class DatabaseStorage implements IStorage {
   // Enhanced Quotes Implementation
   async getEnhancedQuotes(): Promise<any[]> {
     return await db.select().from(enhancedQuotes).orderBy(desc(enhancedQuotes.createdAt));
-  }
-
-  async getBlogPosts(): Promise<BlogPost[]> {
-    try {
-      return await this.db.select().from(schema.blogPosts).orderBy(desc(schema.blogPosts.createdAt));
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   async getAllQuotes(): Promise<any[]> {

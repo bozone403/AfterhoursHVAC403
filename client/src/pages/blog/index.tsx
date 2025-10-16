@@ -227,14 +227,30 @@ const BlogIndex = () => {
           </div>
           
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="#" className="hvac-badge bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg transition-all">🔥 Furnaces</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-cyan-600 to-cyan-700 text-white hover:shadow-lg transition-all">❄️ Air Conditioning</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-green-600 to-green-700 text-white hover:shadow-lg transition-all">🔧 Maintenance</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:shadow-lg transition-all">⚡ Energy Efficiency</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:shadow-lg transition-all">🏢 Commercial HVAC</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg transition-all">🔍 Troubleshooting</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:shadow-lg transition-all">💨 Indoor Air Quality</a>
-            <a href="#" className="hvac-badge bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:shadow-lg transition-all">🍂 Seasonal Tips</a>
+            <Link href="/shop/furnaces">
+              <a className="hvac-badge bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:shadow-lg transition-all">🔥 Furnaces</a>
+            </Link>
+            <Link href="/shop/air-conditioning">
+              <a className="hvac-badge bg-gradient-to-r from-cyan-600 to-cyan-700 text-white hover:shadow-lg transition-all">❄️ Air Conditioning</a>
+            </Link>
+            <Link href="/shop/maintenance-plans">
+              <a className="hvac-badge bg-gradient-to-r from-green-600 to-green-700 text-white hover:shadow-lg transition-all">🔧 Maintenance</a>
+            </Link>
+            <Link href="/services/energy-audit">
+              <a className="hvac-badge bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:shadow-lg transition-all">⚡ Energy Efficiency</a>
+            </Link>
+            <Link href="/shop/commercial">
+              <a className="hvac-badge bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:shadow-lg transition-all">🏢 Commercial HVAC</a>
+            </Link>
+            <Link href="/services/ac-repair">
+              <a className="hvac-badge bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg transition-all">🔍 Troubleshooting</a>
+            </Link>
+            <Link href="/services/duct-cleaning">
+              <a className="hvac-badge bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:shadow-lg transition-all">💨 Indoor Air Quality</a>
+            </Link>
+            <Link href="/blog/prepare-furnace-winter">
+              <a className="hvac-badge bg-gradient-to-r from-orange-600 to-orange-700 text-white hover:shadow-lg transition-all">🍂 Seasonal Tips</a>
+            </Link>
           </div>
         </div>
       </section>

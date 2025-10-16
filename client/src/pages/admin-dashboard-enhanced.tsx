@@ -13,7 +13,38 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Users, UserPlus, Settings, Shield, AlertTriangle, Eye, Edit, Trash2, RefreshCw, Lock, Unlock, FileText, Calendar, DollarSign, Activity, UsersRound, BookOpen, Plus } from "lucide-react";
+import { 
+  Users, 
+  UserPlus, 
+  Settings, 
+  Shield, 
+  AlertTriangle, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  RefreshCw, 
+  Lock, 
+  Unlock, 
+  FileText, 
+  Calendar, 
+  DollarSign, 
+  Activity, 
+  UsersRound, 
+  BookOpen, 
+  Plus,
+  Search,
+  Filter,
+  MoreVertical,
+  CheckCircle, 
+  XCircle, 
+  Clock,
+  Ban,
+  Download,
+  Upload,
+  Mail,
+  Building,
+  Phone
+} from "lucide-react";
 import { Link } from "wouter";
 
 interface User {
@@ -152,6 +183,18 @@ export default function AdminDashboardEnhanced() {
   // Fetch blog posts
   const { data: blogPosts = [], isLoading: blogLoading } = useQuery<any[]>({
     queryKey: ["/api/blog/posts"],
+    enabled: true
+  });
+
+  // Fetch corporate inquiries
+  const { data: corporateInquiries = [], isLoading: corporateLoading } = useQuery<any[]>({
+    queryKey: ["/api/admin/corporate-inquiries"],
+    enabled: true
+  });
+
+  // Fetch service callouts
+  const { data: serviceCallouts = [], isLoading: calloutsLoading } = useQuery<any[]>({
+    queryKey: ["/api/admin/service-callouts"],
     enabled: true
   });
 
@@ -665,6 +708,16 @@ export default function AdminDashboardEnhanced() {
             <div className="stat-label">Total Users</div>
           </div>
           <div className="stat-card">
+            <Building className="h-8 w-8 text-purple-600 mb-4" />
+            <div className="stat-number">{corporateInquiries.length}</div>
+            <div className="stat-label">Corporate Inquiries</div>
+          </div>
+          <div className="stat-card">
+            <Phone className="h-8 w-8 text-green-600 mb-4" />
+            <div className="stat-number">{serviceCallouts.length}</div>
+            <div className="stat-label">Service Callouts</div>
+          </div>
+          <div className="stat-card">
             <Activity className="h-8 w-8 text-green-600 mb-4" />
             <div className="stat-number">{systemStats.activeUsers}</div>
             <div className="stat-label">Active Users</div>
@@ -684,11 +737,6 @@ export default function AdminDashboardEnhanced() {
             <div className="stat-number">{systemStats.pendingApplications}</div>
             <div className="stat-label">Pending Apps</div>
           </div>
-          <div className="stat-card">
-            <DollarSign className="h-8 w-8 text-emerald-600 mb-4" />
-            <div className="stat-number">${systemStats.totalRevenue}</div>
-            <div className="stat-label">Est. Revenue</div>
-          </div>
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
@@ -700,6 +748,8 @@ export default function AdminDashboardEnhanced() {
             <TabsTrigger value="bookings" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Service Bookings</TabsTrigger>
             <TabsTrigger value="contacts" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Contact Messages</TabsTrigger>
             <TabsTrigger value="emergency" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Emergency Requests</TabsTrigger>
+            <TabsTrigger value="corporate" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Corporate Inquiries</TabsTrigger>
+            <TabsTrigger value="callouts" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Service Callouts</TabsTrigger>
             <TabsTrigger value="forum" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Forum Management</TabsTrigger>
           </TabsList>
 
@@ -1704,6 +1754,94 @@ export default function AdminDashboardEnhanced() {
           </div>
         </DialogContent>
       </Dialog>
+        </TabsContent>
+
+        {/* Corporate Inquiries Tab */}
+        <TabsContent value="corporate" className="space-y-6">
+          <div className="hvac-card">
+            <h2 className="hvac-heading-md mb-6">Corporate Inquiries</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left p-4">Company</th>
+                    <th className="text-left p-4">Contact</th>
+                    <th className="text-left p-4">Email</th>
+                    <th className="text-left p-4">Users</th>
+                    <th className="text-left p-4">Status</th>
+                    <th className="text-left p-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {corporateInquiries.map((inquiry: any) => (
+                    <tr key={inquiry.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="p-4 font-semibold">{inquiry.company_name}</td>
+                      <td className="p-4">{inquiry.contact_name}</td>
+                      <td className="p-4 text-blue-600">{inquiry.email}</td>
+                      <td className="p-4">{inquiry.projected_users} users</td>
+                      <td className="p-4">
+                        <Badge variant={inquiry.status === 'new' ? 'default' : 'secondary'}>
+                          {inquiry.status}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-sm text-gray-600">
+                        {new Date(inquiry.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Service Callouts Tab */}
+        <TabsContent value="callouts" className="space-y-6">
+          <div className="hvac-card">
+            <h2 className="hvac-heading-md mb-6">Service Callout Requests</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left p-4">Customer</th>
+                    <th className="text-left p-4">Contact</th>
+                    <th className="text-left p-4">Address</th>
+                    <th className="text-left p-4">Amount</th>
+                    <th className="text-left p-4">Status</th>
+                    <th className="text-left p-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {serviceCallouts.map((callout: any) => (
+                    <tr key={callout.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="p-4 font-semibold">{callout.customer_name}</td>
+                      <td className="p-4">
+                        <div className="text-sm">
+                          <div className="text-blue-600">{callout.customer_email}</div>
+                          <div className="text-gray-600">{callout.customer_phone}</div>
+                        </div>
+                      </td>
+                      <td className="p-4 text-sm">{callout.service_address}</td>
+                      <td className="p-4 font-semibold text-green-600">
+                        ${callout.amount || 0}
+                      </td>
+                      <td className="p-4">
+                        <Badge variant={callout.status === 'new' ? 'default' : 'secondary'}>
+                          {callout.status}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-sm text-gray-600">
+                        {new Date(callout.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </TabsContent>
+
+        </Tabs>
       </div>
     </div>
   );

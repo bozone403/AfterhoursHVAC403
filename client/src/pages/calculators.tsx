@@ -7,6 +7,14 @@ import { Calculator, Building, Flame, Snowflake, Wrench, DollarSign, Zap, File, 
 
 const freeCalculators = [
   {
+    id: 'enhanced-quote-builder',
+    title: 'Material Quote Builder',
+    description: 'Comprehensive material estimator with real supplier pricing - our best calculator!',
+    icon: Calculator,
+    link: '/calculators/enhanced-quote-builder',
+    badge: 'Recommended'
+  },
+  {
     id: 'btu-calculator',
     title: 'BTU Calculator',
     description: 'Calculate heating and cooling requirements with Ducane, Daikin & Lennox equipment recommendations',
@@ -29,14 +37,6 @@ const freeCalculators = [
     icon: Calculator,
     link: '/calculators/load-calculator',
     badge: 'Free Tool'
-  },
-  {
-    id: 'btu-legacy',
-    title: 'Simple BTU Calculator',
-    description: 'Basic BTU calculation for quick estimates',
-    icon: Flame,
-    link: '/calculators/btu',
-    badge: 'Basic Tool'
   }
 ];
 
@@ -122,7 +122,7 @@ const Calculators = () => {
               <p className="text-lg text-blue-200 max-w-2xl mx-auto">Professional estimation tools at no cost</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
               {freeCalculators.map((calc) => {
                 const IconComponent = calc.icon;
                 return (
@@ -237,7 +237,7 @@ const Calculators = () => {
                     </Link>
                     <Button 
                       variant="outline" 
-                      className="border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 font-bold text-lg px-8 py-6 rounded-xl transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                      className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white hover:text-slate-900 font-bold text-lg px-8 py-6 rounded-xl transition-all duration-300 hover:scale-105"
                       onClick={() => window.open('tel:4036136014')}
                       data-testid="button-call"
                     >

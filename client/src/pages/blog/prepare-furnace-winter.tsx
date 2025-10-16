@@ -228,16 +228,38 @@ const PrepareFurnaceWinter = () => {
               <div className="mt-8 flex items-center">
                 <span className="mr-4 text-lightgray">Share:</span>
                 <div className="flex space-x-3">
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="https://www.facebook.com/sharer/sharer.php?u=https://afterhourshvac.ca/blog/prepare-furnace-winter" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share on Facebook"
+                  >
                     <i className="fab fa-facebook-f text-lg"></i>
                   </a>
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="https://twitter.com/intent/tweet?url=https://afterhourshvac.ca/blog/prepare-furnace-winter&text=How%20to%20Prepare%20Your%20Furnace%20for%20Winter" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share on Twitter"
+                  >
                     <i className="fab fa-twitter text-lg"></i>
                   </a>
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="https://www.linkedin.com/sharing/share-offsite/?url=https://afterhourshvac.ca/blog/prepare-furnace-winter" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share on LinkedIn"
+                  >
                     <i className="fab fa-linkedin-in text-lg"></i>
                   </a>
-                  <a href="#" className="text-lightgray hover:text-primary transition-colors">
+                  <a 
+                    href="mailto:?subject=Check%20out%20this%20article&body=I%20thought%20you%20might%20find%20this%20interesting:%20https://afterhourshvac.ca/blog/prepare-furnace-winter" 
+                    className="text-lightgray hover:text-primary transition-colors"
+                    aria-label="Share via email"
+                  >
                     <i className="far fa-envelope text-lg"></i>
                   </a>
                 </div>
@@ -262,34 +284,11 @@ const PrepareFurnaceWinter = () => {
                 <div className="p-4">
                   <h3 className="font-bold mb-2">
                     <Link href="/blog/commercial-vs-residential-hvac">
-                      <a className="hover:text-primary transition-colors">Commercial vs Residential HVAC: What's the Difference?</a>
+                      <a className="hover:text-primary transition-colors">Commercial vs Residential HVAC: Key Differences</a>
                     </Link>
                   </h3>
-                  <p className="text-sm text-lightgray mb-2">An in-depth comparison of system types, designs, and maintenance requirements.</p>
+                  <p className="text-sm text-lightgray mb-2">Understanding the fundamental differences between commercial and residential HVAC systems.</p>
                   <Link href="/blog/commercial-vs-residential-hvac">
-                    <a className="text-secondary hover:text-primary text-sm">Read More →</a>
-                  </Link>
-                </div>
-              </div>
-              
-              <div className="bg-darkgray rounded-lg overflow-hidden border border-gray-700">
-                <Link href="#">
-                  <a>
-                    <img 
-                      src="https://pixabay.com/get/g0931b0b5caf4e8fb8de593236e0345e9b6ed7d4981ff39056847ba96274eaa1273c0ea61f0782c8bbd49968a85511f5b0e50d38d7e66137b2a28c4300d074c9e_1280.jpg" 
-                      alt="Older air conditioning unit in need of replacement" 
-                      className="w-full h-40 object-cover"
-                    />
-                  </a>
-                </Link>
-                <div className="p-4">
-                  <h3 className="font-bold mb-2">
-                    <Link href="#">
-                      <a className="hover:text-primary transition-colors">Signs Your AC Needs Replacement</a>
-                    </Link>
-                  </h3>
-                  <p className="text-sm text-lightgray mb-2">Recognize the warning signs before your air conditioner fails completely.</p>
-                  <Link href="#">
                     <a className="text-secondary hover:text-primary text-sm">Read More →</a>
                   </Link>
                 </div>
