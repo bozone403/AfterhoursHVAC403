@@ -124,14 +124,11 @@ const WaterHeatersShop = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-                  data-testid="button-shop-now"
-                  asChild
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
+                  onClick={() => handleBookService(waterHeaterModels[0])}
                 >
-                  <a href="#water-heater-models">
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Shop Water Heaters
-                  </a>
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Book Now - Starting at ${waterHeaterModels[0].price.toLocaleString()}
                 </Button>
                 <Button 
                   size="lg" 
@@ -477,6 +474,15 @@ const WaterHeatersShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };
