@@ -358,9 +358,19 @@ const AirConditioningShop = () => {
                       Buy Now - ${ac.price.toLocaleString()}
                     </Button>
                     <div className="flex gap-3">
+                      <Button
+                        size="lg"
+                        className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white font-bold text-lg px-8"
+                        onClick={() => handleBookService(ac)}
+                        data-testid={`button-book-${ac.id}`}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Book Now
+                      </Button>
                       <Button 
-                        className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:scale-105 transition-all"
-                        data-testid={`button-quote-${ac.id}`}
+                        variant="outline" 
+                        className="border-2 hover:bg-gray-50"
+                        data-testid={`button-call-${ac.id}`}
                         asChild
                       >
                         <Link href="/quote">
@@ -515,6 +525,15 @@ const AirConditioningShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };
