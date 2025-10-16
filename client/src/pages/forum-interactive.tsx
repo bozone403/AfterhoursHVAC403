@@ -57,6 +57,9 @@ export default function ForumInteractive() {
   const [editingContent, setEditingContent] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Admin check
+  const [isAdmin] = useState(() => localStorage.getItem('isAdmin') === 'true');
 
   const { data: user } = useQuery<UserType>({
     queryKey: ["/api/user"]
