@@ -342,49 +342,25 @@ const FurnacesShop = () => {
 
                   {/* CTA Buttons */}
                   <div className="space-y-3">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:scale-105 transition-all"
-                      data-testid={`button-buy-${furnace.id}`}
-                      onClick={() => {
-                        const serviceData = {
-                          name: furnace.name,
-                          price: `$${furnace.price.toLocaleString()}`,
-                          description: `${furnace.name} - ${furnace.specs.btuh} BTU/h`,
-                          category: 'furnace-purchase'
-                        };
-                        window.location.href = `/checkout?service=${encodeURIComponent(JSON.stringify(serviceData))}`;
-                      }}
-                    >
-                      Buy Now - ${furnace.price.toLocaleString()}
-                    </Button>
                     <div className="flex gap-3">
                       <Button
-                        size="lg"
-                        className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold text-lg px-8"
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
                         onClick={() => handleBookService(furnace)}
                         data-testid={`button-book-${furnace.id}`}
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        Book Now
+                        Buy Now - ${furnace.price.toLocaleString()}
                       </Button>
                       <Button 
                         variant="outline" 
                         className="border-2 hover:bg-gray-50"
-                        data-testid={`button-call-${furnace.id}`}
+                        data-testid={`button-quote-${furnace.id}`}
                         asChild
                       >
                         <Link href="/quote">
                           Get Quote
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="border-2 hover:bg-gray-50"
-                        data-testid={`button-call-${furnace.id}`}
-                        onClick={() => window.location.href = 'tel:4036136014'}
-                      >
-                        <Phone className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
