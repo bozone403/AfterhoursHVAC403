@@ -13,38 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { 
-  Users, 
-  UserPlus, 
-  Settings, 
-  Shield, 
-  AlertTriangle, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  RefreshCw, 
-  Lock, 
-  Unlock, 
-  FileText, 
-  Calendar, 
-  DollarSign, 
-  Activity, 
-  UsersRound, 
-  BookOpen, 
-  Plus,
-  Search,
-  Filter,
-  MoreVertical,
-  CheckCircle, 
-  XCircle, 
-  Clock,
-  Ban,
-  Download,
-  Upload,
-  Mail,
-  Building,
-  Phone
-} from "lucide-react";
+import { Users, UserPlus, Settings, Shield, AlertTriangle, Eye, Edit, Trash2, RefreshCw, Lock, Unlock, FileText, Calendar, DollarSign, Activity, UsersRound, BookOpen, Plus } from "lucide-react";
 import { Link } from "wouter";
 
 interface User {
@@ -183,18 +152,6 @@ export default function AdminDashboardEnhanced() {
   // Fetch blog posts
   const { data: blogPosts = [], isLoading: blogLoading } = useQuery<any[]>({
     queryKey: ["/api/blog/posts"],
-    enabled: true
-  });
-
-  // Fetch corporate inquiries
-  const { data: corporateInquiries = [], isLoading: corporateLoading } = useQuery<any[]>({
-    queryKey: ["/api/admin/corporate-inquiries"],
-    enabled: true
-  });
-
-  // Fetch service callouts
-  const { data: serviceCallouts = [], isLoading: calloutsLoading } = useQuery<any[]>({
-    queryKey: ["/api/admin/service-callouts"],
     enabled: true
   });
 
@@ -708,16 +665,6 @@ export default function AdminDashboardEnhanced() {
             <div className="stat-label">Total Users</div>
           </div>
           <div className="stat-card">
-            <Building className="h-8 w-8 text-purple-600 mb-4" />
-            <div className="stat-number">{corporateInquiries.length}</div>
-            <div className="stat-label">Corporate Inquiries</div>
-          </div>
-          <div className="stat-card">
-            <Phone className="h-8 w-8 text-green-600 mb-4" />
-            <div className="stat-number">{serviceCallouts.length}</div>
-            <div className="stat-label">Service Callouts</div>
-          </div>
-          <div className="stat-card">
             <Activity className="h-8 w-8 text-green-600 mb-4" />
             <div className="stat-number">{systemStats.activeUsers}</div>
             <div className="stat-label">Active Users</div>
@@ -737,6 +684,11 @@ export default function AdminDashboardEnhanced() {
             <div className="stat-number">{systemStats.pendingApplications}</div>
             <div className="stat-label">Pending Apps</div>
           </div>
+          <div className="stat-card">
+            <DollarSign className="h-8 w-8 text-emerald-600 mb-4" />
+            <div className="stat-number">${systemStats.totalRevenue}</div>
+            <div className="stat-label">Est. Revenue</div>
+          </div>
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
@@ -748,8 +700,6 @@ export default function AdminDashboardEnhanced() {
             <TabsTrigger value="bookings" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Service Bookings</TabsTrigger>
             <TabsTrigger value="contacts" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Contact Messages</TabsTrigger>
             <TabsTrigger value="emergency" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Emergency Requests</TabsTrigger>
-            <TabsTrigger value="corporate" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Corporate Inquiries</TabsTrigger>
-            <TabsTrigger value="callouts" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Service Callouts</TabsTrigger>
             <TabsTrigger value="forum" className="hvac-text-base px-6 py-3 rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-700 data-[state=active]:text-white">Forum Management</TabsTrigger>
           </TabsList>
 
@@ -1754,8 +1704,6 @@ export default function AdminDashboardEnhanced() {
           </div>
         </DialogContent>
       </Dialog>
-        </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
