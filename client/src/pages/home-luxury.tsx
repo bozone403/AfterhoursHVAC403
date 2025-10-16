@@ -31,19 +31,18 @@ const HomeLuxury = () => {
         <meta name="description" content="Experience unparalleled HVAC service in Calgary. Award-winning technicians, premium installations, and white-glove service since 2009." />
       </Helmet>
 
-      {/* Hero Section - Premium Gradient */}
-      <section className="relative min-h-[85vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden pt-20">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl animate-pulse delay-700"></div>
+      {/* Hero Section - Clean Luxury */}
+      <section className="relative min-h-[90vh] bg-slate-950 overflow-hidden pt-24">
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)', backgroundSize: '100px 100px'}}></div>
         </div>
 
         {/* Premium Badge */}
         <div className="absolute top-8 right-8 z-20">
-          <div className="bg-gradient-to-r from-amber-400 to-amber-600 text-white px-6 py-2 rounded-full shadow-xl flex items-center gap-2">
+          <div className="bg-amber-600 text-white px-5 py-2.5 flex items-center gap-2 border-l-4 border-amber-400">
             <Award className="w-4 h-4" />
-            <span className="font-semibold text-sm">Calgary's Premier HVAC</span>
+            <span className="font-bold text-sm tracking-wide">CALGARY'S PREMIER HVAC</span>
           </div>
         </div>
 
@@ -54,83 +53,82 @@ const HomeLuxury = () => {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span className="text-white/90 text-sm font-medium">Trusted by 5,000+ Calgary Homes</span>
+                <div className="inline-flex items-center gap-2 bg-amber-600 px-5 py-2 border-l-4 border-amber-400">
+                  <Sparkles className="w-4 h-4 text-white" />
+                  <span className="text-white text-sm font-bold tracking-wide uppercase">5,000+ Calgary Homes Trust Us</span>
                 </div>
                 
-                <h1 className="text-5xl lg:text-7xl font-black text-white leading-tight">
-                  Experience HVAC
+                <h1 className="text-6xl lg:text-8xl font-black text-white leading-none tracking-tight">
+                  PREMIUM HVAC
                   <br />
-                  <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
-                    Excellence
+                  <span className="text-amber-500">
+                    EXCELLENCE
                   </span>
                 </h1>
                 
-                <p className="text-xl text-blue-100 max-w-xl leading-relaxed">
-                  Premium heating, cooling, and air quality solutions delivered with 
-                  unmatched precision and care. Your comfort is our commitment.
+                <p className="text-lg text-slate-300 max-w-xl leading-relaxed font-light">
+                  Calgary's most trusted HVAC service. Award-winning installations,
+                  24/7 emergency response, and uncompromising quality since 2009.
                 </p>
               </div>
 
-              {/* CTA Buttons */}
+              {/* CTA Buttons - Clean & Square */}
               <div className="flex flex-col sm:flex-row gap-4 relative z-20">
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105 w-full sm:w-auto"
+                  className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-base px-10 py-7 transition-all border-l-4 border-amber-400 hover:border-amber-300 w-full sm:w-auto uppercase tracking-wider"
                   data-testid="button-emergency-call"
                 >
-                  <Phone className="w-5 h-5 mr-2" />
+                  <Phone className="w-5 h-5 mr-3" />
                   24/7 Emergency: (403) 613-6014
                 </Button>
                 
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white hover:text-slate-900 font-bold text-lg px-8 py-6 rounded-xl transition-all hover:scale-105 w-full sm:w-auto"
+                  className="bg-transparent text-white border-2 border-white hover:bg-white hover:text-slate-950 font-bold text-base px-10 py-7 transition-all w-full sm:w-auto uppercase tracking-wider"
                   asChild
                   data-testid="button-schedule"
                 >
                   <Link href="/contact">
-                    <Calendar className="w-5 h-5 mr-2" />
+                    <Calendar className="w-5 h-5 mr-3" />
                     Schedule Service
                   </Link>
                 </Button>
               </div>
 
-              {/* AI Tool Callout - Prominent */}
+              {/* AI Tool Callout - Clean */}
               <Link href="/tools/ai-symptom-diagnoser">
-                <div className="bg-gradient-to-r from-green-500/20 to-emerald-600/20 backdrop-blur-sm border-2 border-green-400/40 rounded-2xl p-6 hover:border-green-400/60 transition-all group cursor-pointer hover:scale-105 shadow-xl shadow-green-500/20">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Brain className="w-7 h-7 text-white" />
+                <div className="bg-emerald-600 border-l-4 border-emerald-400 p-6 hover:bg-emerald-500 transition-all group cursor-pointer">
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 bg-emerald-700 flex items-center justify-center flex-shrink-0">
+                      <Brain className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-green-400" />
-                        <span className="text-xs font-bold text-green-400 uppercase tracking-wider">New AI Feature</span>
+                        <span className="text-xs font-bold text-emerald-200 uppercase tracking-widest">NEW AI TOOL</span>
                       </div>
-                      <h3 className="text-lg font-bold text-white mb-1">AI Symptom Diagnoser</h3>
-                      <p className="text-sm text-blue-200">Get instant AI diagnosis of your HVAC problems</p>
+                      <h3 className="text-base font-bold text-white uppercase tracking-wide">AI Symptom Diagnoser</h3>
+                      <p className="text-sm text-emerald-100 font-light">Instant diagnosis of HVAC problems</p>
                     </div>
-                    <ArrowRight className="w-6 h-6 text-green-400 group-hover:translate-x-2 transition-transform flex-shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform flex-shrink-0" />
                   </div>
                 </div>
               </Link>
 
-              {/* Trust Indicators */}
-              <div className="grid grid-cols-3 gap-6 pt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-black text-amber-400 mb-1">15+</div>
-                  <div className="text-sm text-blue-200">Years Excellence</div>
+              {/* Trust Indicators - Clean */}
+              <div className="grid grid-cols-3 gap-4 pt-8">
+                <div className="border-l-4 border-amber-500 pl-4">
+                  <div className="text-4xl font-black text-white mb-0.5">15+</div>
+                  <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">Years</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-black text-amber-400 mb-1">5K+</div>
-                  <div className="text-sm text-blue-200">Happy Clients</div>
+                <div className="border-l-4 border-amber-500 pl-4">
+                  <div className="text-4xl font-black text-white mb-0.5">5K+</div>
+                  <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">Clients</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-black text-amber-400 mb-1">24/7</div>
-                  <div className="text-sm text-blue-200">Support</div>
+                <div className="border-l-4 border-amber-500 pl-4">
+                  <div className="text-4xl font-black text-white mb-0.5">24/7</div>
+                  <div className="text-xs text-slate-400 uppercase tracking-wider font-bold">Support</div>
                 </div>
               </div>
             </div>
