@@ -476,14 +476,12 @@ const AddonsExtrasShop = () => {
                   <div className="pt-2">
                     {item.contactRequired ? (
                       <Button 
-                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg"
-                        data-testid={`button-contact-${item.id}`}
-                        asChild
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold shadow-lg"
+                        onClick={() => handleBookService(item)}
+                        data-testid={`button-book-${item.id}`}
                       >
-                        <Link href="/contact">
-                          <Phone className="h-4 w-4 mr-2" />
-                          Contact for Quote
-                        </Link>
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Book Now
                       </Button>
                     ) : (
                       <Button 
@@ -583,6 +581,15 @@ const AddonsExtrasShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };
