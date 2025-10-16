@@ -541,21 +541,24 @@ export class DatabaseStorage implements IStorage {
   
   // FORUM METHODS
   async getForumCategories(): Promise<ForumCategory[]> {
-    return db
-      .select()
-      .from(forumCategories)
-      .where(eq(forumCategories.isActive, true));
+    try {
+      return await this.db.select().from(schema.forumCategories).where(eq(forumCategories.isActive, true));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
   
-  async getForumTopics(categoryId?: number): Promise<(ForumTopic & { username: string })[]> {
-    const query = categoryId ? 
-      and(eq(forumTopics.categoryId, categoryId)) : 
-      undefined;
-    
-    const results = await db
-      .select({
-        id: forumTopics.id,
-        categoryId: forumTopics.categoryId,
+  async getForumTopics(categoryId?: number): Promise<ForumTopic[]> {
+    try {
+      if (categoryId) {
+        return await this.db.select().from(schema.forumTopics).where(eq(schema.forumTopics.categoryId, categoryId));
+      }
+      return await this.db.select().from(schema.forumTopics);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
         userId: forumTopics.userId,
         title: forumTopics.title,
         content: forumTopics.content,
@@ -635,11 +638,11 @@ export class DatabaseStorage implements IStorage {
   }
   
   async createForumTopic(topic: InsertForumTopic): Promise<ForumTopic> {
-    const [newTopic] = await db
-      .insert(forumTopics)
+    const [result] = await this.db
+      .insert(schema.forumTopics)
       .values(topic)
       .returning();
-    return newTopic;
+    return result;
   }
   
   async createForumPost(post: InsertForumPost): Promise<ForumPost> {
@@ -1141,6 +1144,14 @@ export class DatabaseStorage implements IStorage {
   // Enhanced Quotes Implementation
   async getEnhancedQuotes(): Promise<any[]> {
     return await db.select().from(enhancedQuotes).orderBy(desc(enhancedQuotes.createdAt));
+  }
+
+  async getBlogPosts(): Promise<BlogPost[]> {
+    try {
+      return await this.db.select().from(schema.blogPosts).orderBy(desc(schema.blogPosts.createdAt));
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async getAllQuotes(): Promise<any[]> {
