@@ -222,15 +222,12 @@ const MaintenancePlansShop = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-                data-testid="button-view-plans"
-                asChild
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:scale-105"
+                onClick={() => handleBookService(plan)}
+                data-testid={`button-subscribe-${plan.id}`}
               >
-                <a href="#maintenance-plans">
-                  View Plans
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </a>
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Subscribe Now
               </Button>
               <Button 
                 size="lg" 
@@ -521,6 +518,15 @@ const MaintenancePlansShop = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      {selectedService && (
+        <ServiceBookingModal
+          isOpen={bookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          service={selectedService}
+        />
+      )}
     </>
   );
 };
