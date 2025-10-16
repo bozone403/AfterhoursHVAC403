@@ -1,7 +1,14 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { Button } from '@/components/ui/button';
+import { Plus, Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 // Fallback static posts for when API is not available
 const fallbackPosts = [
@@ -41,6 +48,36 @@ function useBlogPosts() {
 
 const BlogIndex = () => {
   const { data: blogPosts = [], isLoading, error } = useBlogPosts();
+  const [isAdmin, setIsAdmin] = useState(() => {
+    // Check if user is admin - simple check for now
+    return localStorage.getItem('isAdmin') === 'true';
+  });
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newPost, setNewPost] = useState({ title: '', slug: '', excerpt: '', content: '', tags: '' });
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const createPostMutation = useMutation({
+    mutationFn: async (postData: any) => {
+      return await apiRequest('POST', '/api/admin/blog/posts', postData);
+    },
+    onSuccess: () => {
+      toast({ title: 'Success!', description: 'Blog post created successfully' });
+      setShowCreateDialog(false);
+      setNewPost({ title: '', slug: '', excerpt: '', content: '', tags: '' });
+      queryClient.invalidateQueries({ queryKey: ['blog-posts'] });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to create post', variant: 'destructive' });
+    },
+  });
+
+  const handleCreatePost = () => {
+    createPostMutation.mutate({
+      ...newPost,
+      author: 'AfterHours HVAC Team'
+    });
+  };
 
   return (
     <>
@@ -52,6 +89,19 @@ const BlogIndex = () => {
       {/* Page Header */}
       <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-orange-500 text-white">
         <div className="hvac-container py-24">
+          {/* Admin Create Button */}
+          {isAdmin && (
+            <div className="absolute top-4 right-4">
+              <Button
+                onClick={() => setShowCreateDialog(true)}
+                className="bg-white text-blue-600 hover:bg-gray-100"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Post
+              </Button>
+            </div>
+          )}
+          
           <div className="text-center">
             <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-3 mb-6">
               <span className="text-white text-lg font-bold">📚 HVAC Knowledge Hub</span>
@@ -188,6 +238,70 @@ const BlogIndex = () => {
           </div>
         </div>
       </section>
+
+      {/* Admin Create Post Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Blog Post</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Title</label>
+              <Input
+                value={newPost.title}
+                onChange={(e) => {
+                  setNewPost({ ...newPost, title: e.target.value, slug: e.target.value.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '') });
+                }}
+                placeholder="Post title"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Slug</label>
+              <Input
+                value={newPost.slug}
+                onChange={(e) => setNewPost({ ...newPost, slug: e.target.value })}
+                placeholder="post-slug"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Excerpt</label>
+              <Textarea
+                value={newPost.excerpt}
+                onChange={(e) => setNewPost({ ...newPost, excerpt: e.target.value })}
+                placeholder="Brief summary"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Content (Markdown supported)</label>
+              <Textarea
+                value={newPost.content}
+                onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                placeholder="Full post content"
+                rows={10}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Tags (comma-separated)</label>
+              <Input
+                value={newPost.tags}
+                onChange={(e) => setNewPost({ ...newPost, tags: e.target.value })}
+                placeholder="Furnace Tips, Winter, Maintenance"
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={handleCreatePost} disabled={createPostMutation.isPending} className="flex-1">
+                <Save className="w-4 h-4 mr-2" />
+                {createPostMutation.isPending ? 'Creating...' : 'Create Post'}
+              </Button>
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)} className="flex-1">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
