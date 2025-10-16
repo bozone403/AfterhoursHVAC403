@@ -472,14 +472,11 @@ export class DatabaseStorage implements IStorage {
   
   // BLOG METHODS
   async getBlogPosts(publishedOnly: boolean = true): Promise<BlogPost[]> {
-    const query = publishedOnly ? 
-      and(eq(blogPosts.isPublished, true)) : 
-      undefined;
-    
-    return db
-      .select()
-      .from(blogPosts)
-      .where(query);
+    if (publishedOnly) {
+      return await db.select().from(blogPosts).where(eq(blogPosts.isPublished, true)).orderBy(desc(blogPosts.createdAt)).all();
+    } else {
+      return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt)).all();
+    }
   }
   
   async getBlogPostById(id: number): Promise<BlogPost | undefined> {
